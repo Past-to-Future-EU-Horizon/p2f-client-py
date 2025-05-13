@@ -5,6 +5,10 @@ description = "API Client library for the Past to Future project."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "p2f-pydantic",
     "python-dotenv>=1.1.0",
     "requests>=2.32.3",
 ]
+
+[tool.uv.sources]
+p2f-pydantic = { git = "https://github.com/Past-to-Future-EU-Horizon/p2f-pydantic" }
