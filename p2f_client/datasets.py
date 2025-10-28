@@ -5,9 +5,10 @@ import requests
 # Batteries included libraries
 
 class datasets:
-    def __init__(self, host_url):
-        self.host_url = host_url
+    def __init__(self, base_url):
+        self.base_url = base_url
         self.prefix = "datasets"
+        self.dataset_url = self.base_url / self.prefix
     def list_datasets(self):
         list_url_endpoint = f"{self.host_url}/{self.prefix}"
         r = requests.get(list_url_endpoint)

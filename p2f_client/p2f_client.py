@@ -2,6 +2,7 @@
 from .datasets import datasets
 # Third Party Libraries
 import requests
+import furl
 # Batteries included libraries
 
 class P2F_Client:
@@ -9,4 +10,7 @@ class P2F_Client:
         self.hostname = hostname
         self.port = port
         self.host_url = f"https://{self.hostname}:{self.port}"
-        self.datasets = datasets(self.host_url)
+        self.base_url = furl.furl(self.host_url)
+        self.datasets = datasets(self.base_url)
+    def request_token(self, email):
+        self.email = email
