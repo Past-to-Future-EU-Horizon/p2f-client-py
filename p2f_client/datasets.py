@@ -2,30 +2,49 @@
 from p2f_pydantic.datasets import Datasets
 # Third Party Libraries
 import requests
+from furl import furl
 # Batteries included libraries
+from uuid import UUID
+from typing import Optional, List
 
 class datasets:
     def __init__(self, base_url):
-        self.base_url = base_url
+        self.base_url = furl(base_url)
         self.prefix = "datasets"
         self.dataset_url = self.base_url / self.prefix
-    def list_datasets(self):
-        list_url_endpoint = f"{self.host_url}/{self.prefix}"
-        r = requests.get(list_url_endpoint)
-        return r.json
-    def get_dataset(self):
-        get_url_endpoint = f"{self.host_url}/{self.prefix}"
-        r = requests.get(get_url_endpoint)
-        return r.json
-    def create_dataset(self, new_dataset: Datasets):
-        create_url_endpoint = f"{self.host_url}/{self.prefix}"
-        r = requests.post(create_url_endpoint,
-                          json=new_dataset)
-    def update_dataset(self, update_dataset: Datasets):
-        update_url_endpoint = f"{self.host_url}/{self.prefix}"
-        r = requests.put(update_url_endpoint,
-                          json=update_dataset)
-    def delete_dataset(self, delete_dataset: int | Datasets):
-        delete_url_endpoint = f"{self.host_url}/{self.prefix}"
-        r = requests.delete(delete_url_endpoint,
-                          json=delete_dataset)
+        self.datasets = []
+    def add_dataset(self, dataset: Datasets):
+        self.datasets.append(dataset)
+    def upload_datasets(self):
+        uploaded_datasets = []
+        for dataset in self.datasets:
+            r = requests.post(self.dataset_url,
+                              data=dataset.model_dump_json(exclude_unset=True))
+            uploaded_datasets.append(Datasets(**r.json()))
+        self.uploaded_datasets = uploaded_datasets
+    def upload_dataset(self, dataset: Datasets):
+        r = requests.post(self.dataset_url,
+                          data=dataset.model_dump_json(exclude_unset=True))
+        return Datasets(**r.json())
+    def list_remote_datasets(self, 
+                             is_new_p2f: Optional[bool]=None,
+                             is_sub_dataset: Optional[bool]=None,
+                             doi: Optional[str]=None) -> List[Datasets]:
+        list_url = self.dataset_url
+        if is_new_p2f:
+            list_url["is_new_p2f"] = is_new_p2f
+        if is_sub_dataset:
+            list_url["is_sub_dataset"] = is_sub_dataset
+        if doi:
+            list_url["doi"] = doi
+        r = requests.get(list_url)
+        self.datasets = [Datasets(**x) for x in r.json()]
+    def get_remote_dataset(self, dataset_id):
+        get_url = self.dataset_url
+        get_url["dataset_id"] = dataset_id
+        r = requests.get(get_url)
+        return Datasets(**r.json())
+    def delete_remote_dataset(self, dataset_id):
+        delete_url = self.dataset_url
+        delete_url["dataset_id"] = dataset_id
+        r = requests.delete(delete_url)
