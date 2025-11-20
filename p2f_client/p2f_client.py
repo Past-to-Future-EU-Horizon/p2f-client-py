@@ -9,10 +9,14 @@ import furl
 # Batteries included libraries
 
 class P2F_Client:
-    def __init__(self, hostname, port=443):
+    def __init__(self, hostname, port: int=443, https: bool=True):
         self.hostname = hostname
         self.port = port
-        self.host_url = f"https://{self.hostname}:{self.port}"
+        if https:
+            self.protocol = "https"
+        else:
+            self.protocol = "http"
+        self.host_url = f"{self.protocol}://{self.hostname}:{self.port}"
         self.base_url = furl.furl(self.host_url)
         self.datasets = datasets(self.base_url)
         self.harm_data_records = harm_data_records(self.base_url)
