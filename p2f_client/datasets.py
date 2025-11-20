@@ -14,7 +14,7 @@ class datasets:
         self.dataset_url = self.base_url / self.prefix
         self.upload_queue = []
     def add_dataset(self, dataset: Datasets):
-        self.datasets.append(dataset)
+        self.upload_queue.append(dataset)
     def upload_datasets(self):
         uploaded_datasets = []
         for dataset in self.upload_queue:
