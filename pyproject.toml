@@ -5,7 +5,9 @@ description = "API Client library for the Past to Future project."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "furl>=2.1.4",
     "p2f-pydantic",
+    "pandas>=2.3.3",
     "pyjwt>=2.10.1",
     "python-dotenv>=1.1.0",
     "requests>=2.32.3",

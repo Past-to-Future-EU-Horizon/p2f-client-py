@@ -42,11 +42,9 @@ class datasets:
         # self.datasets = [Datasets(**x) for x in r.json()]
         return [Datasets(**x) for x in r.json()]
     def get_remote_dataset(self, dataset_id):
-        get_url = self.dataset_url
-        get_url.args["dataset_id"] = dataset_id
+        get_url = self.dataset_url / str(dataset_id)
         r = requests.get(get_url)
         return Datasets(**r.json())
     def delete_remote_dataset(self, dataset_id):
-        delete_url = self.dataset_url
-        delete_url.args["dataset_id"] = dataset_id
+        delete_url = self.dataset_url / str(dataset_id)
         r = requests.delete(delete_url)
