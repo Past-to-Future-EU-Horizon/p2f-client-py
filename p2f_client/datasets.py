@@ -32,17 +32,17 @@ class datasets:
                              is_sub_dataset: Optional[bool]=None,
                              doi: Optional[str]=None) -> List[Datasets]:
         list_url = self.dataset_url
-        data = {}
+        # data = {}
         if is_new_p2f is not None:
-            # list_url.args["is_new_p2f"] = is_new_p2f
-            data["is_new_p2f"] = is_new_p2f
+            list_url.args["is_new_p2f"] = is_new_p2f
+            # data["is_new_p2f"] = is_new_p2f
         if is_sub_dataset is not None:
-            # list_url.args["is_sub_dataset"] = is_sub_dataset
-            data["is_sub_dataset"] = is_sub_dataset
+            list_url.args["is_sub_dataset"] = is_sub_dataset
+            # data["is_sub_dataset"] = is_sub_dataset
         if doi is not None:
-            # list_url.args["doi"] = doi
-            data["doi"] = doi
-        r = requests.get(list_url, data=data)
+            list_url.args["doi"] = doi
+            # data["doi"] = doi
+        r = requests.get(list_url)
         # self.datasets = [Datasets(**x) for x in r.json()]
         return [Datasets(**x) for x in r.json()]
     def get_remote_dataset(self, dataset_id):
