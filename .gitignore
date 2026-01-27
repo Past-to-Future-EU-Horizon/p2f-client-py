@@ -174,3 +174,4 @@ cython_debug/
 .pypirc
 
 uv.lock
+Pliocene_SSTs/*
