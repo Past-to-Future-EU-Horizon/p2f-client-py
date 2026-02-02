@@ -25,7 +25,7 @@ class datasets:
         return uploaded_datasets
     def upload_dataset(self, dataset: Datasets):
         r = requests.post(self.dataset_url,
-                          headers=dataset.model_dump_json(exclude_unset=True))
+                          data=dataset.model_dump_json(exclude_unset=True))
         return Datasets(**r.json())
     def list_remote_datasets(self, 
                              is_new_p2f: Optional[bool]=None,
