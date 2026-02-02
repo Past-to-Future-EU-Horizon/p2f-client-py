@@ -52,7 +52,7 @@ class harm_numerical:
         }
         params = {x:y for x, y in params.items() if y != None}
         r = requests.get(self.hdn_url, 
-                         data=params)
+                         params=params)
         return Return_harm_numerical(**r.json())
     def identify_numeric_object(self, 
                                 incoming_json, 
