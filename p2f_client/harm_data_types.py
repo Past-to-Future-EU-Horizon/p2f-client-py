@@ -26,10 +26,12 @@ class harm_data_type:
     def list_data_types(self, 
                         measure: Optional[str]=None,
                         unit_of_measure: Optional[str]=None,
-                        method: Optional[str]=None):
+                        method: Optional[str]=None, 
+                        dataset_id: Optional[UUID]=None):
         params = {"measure": measure,
                   "unit_of_measure": unit_of_measure,
-                  "method": method}
+                  "method": method, 
+                  "dataset_id": dataset_id}
         params = {x:y for x, y in params.items() if y != None}
         r = requests.get(self.hdt_url,
                          data=params)
