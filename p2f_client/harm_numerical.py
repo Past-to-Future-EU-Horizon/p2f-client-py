@@ -10,7 +10,7 @@ import requests
 from furl import furl
 # Batteries included libraries
 from uuid import UUID
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Literal
 
 Harm_numerical_union = Union[Harmonized_float_confidence, 
                              Harmonized_float,
@@ -36,9 +36,24 @@ class harm_numerical:
         r = requests.post(self.hdn_url,
                           data=new_record.model_dump_json(exclude_unset=True))
         return self.identify_numeric_object(r.json(), new_record.model_dump(exclude_unset=True))
-    def list_harm_numericals(self):
-        r = requests.get(self.hdn_url)
-        return [Return_harm_numerical(**x) for x in r.json()]
+    def list_harm_numericals(self, 
+                             record_hash: Optional[str]=None,
+                             numeric_type: Optional[Literal["float_confidence", 
+                                                        "float", 
+                                                        "int_confidence", 
+                                                        "int"]]=None, 
+                             data_type: Optional[UUID]=None, 
+                             dataset_id: Optional[UUID]=None):
+        params = {
+            "record_hash": record_hash,
+            "numeric_type": numeric_type,
+            "data_type": data_type,
+            "dataset_id": dataset_id
+        }
+        params = {x:y for x, y in params.items() if y != None}
+        r = requests.get(self.hdn_url, 
+                         data=params)
+        return Return_harm_numerical(**r.json())
     def identify_numeric_object(self, 
                                 incoming_json, 
                                 original: Optional[Insert_harm_numerical]=None) -> Harm_numerical_union:
