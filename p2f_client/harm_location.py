@@ -34,7 +34,8 @@ class harm_location:
                             minimum_elevation: Optional[float]=None,
                             maximum_elevation: Optional[float]=None,
                             min_location_age: Optional[float]=None,
-                            max_location_age: Optional[float]=None):
+                            max_location_age: Optional[float]=None, 
+                            dataset_id: Optional[UUID]=None):
         params = {
             "bounding_box": bounding_box,
             "location_name": location_name,
@@ -42,11 +43,12 @@ class harm_location:
             "minimum_elevation": minimum_elevation,
             "maximum_elevation": maximum_elevation,
             "min_location_age": min_location_age,
-            "max_location_age": max_location_age
+            "max_location_age": max_location_age,
+            "dataset_id": dataset_id
             }
         params = {x: y for x, y in params.items() if y != None}
         r = requests.get(self.hdl_url,
-                         data=params)
+                         params=params)
         return [Harm_location(**x) for x in r.json()]
     def get_harm_location(self, location_identifier: UUID):
         r = requests.get(self.hdl_url/str(location_identifier))
