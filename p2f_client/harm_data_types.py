@@ -34,7 +34,7 @@ class harm_data_type:
                   "dataset_id": dataset_id}
         params = {x:y for x, y in params.items() if y != None}
         r = requests.get(self.hdt_url,
-                         data=params)
+                         params=params)
         return [Harm_data_type(**x) for x in r.json()]
     def get_data_type(self, datatype_id: UUID):
         r = requests.get(self.hdt_url / datatype_id)
