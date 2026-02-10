@@ -6,6 +6,7 @@ from .harm_numerical import harm_numerical
 from .harm_location import harm_location
 from .harm_species import harm_species
 from .harm_timeslice import harm_timeslice
+from .harm_reference import harm_reference
 # Third Party Libraries
 import requests
 import furl
@@ -28,6 +29,7 @@ class P2F_Client:
         self.harm_location = harm_location(self.base_url)
         self.harm_species = harm_species(self.base_url)
         self.harm_timeslice = harm_timeslice(self.base_url)
+        self.harm_reference = harm_reference(self.base_url)
     def request_token(self, email):
         self.email = email
         self.token_url = self.host_url / "nov-2025-congress"
