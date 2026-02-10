@@ -22,13 +22,16 @@ class harm_reference:
             inserted_harm_references.append(Harm_reference(**r.json()))
         return inserted_harm_references
     def upload_harm_reference(self, new_reference: Harm_reference) -> Harm_reference:
-        r = requests.post(self.hr_url, data=new_reference.model_dump_json(exclude_unset=True))
+        r = requests.post(self.hr_url, 
+                          data=new_reference.model_dump_json(exclude_unset=True))
         if r.ok:
             return (Harm_reference(**r.json()))
     def list_harm_references(self) -> List[Harm_reference]:
         r = requests.get(self.hr_url)
         if r.ok:
             return [Harm_reference(**x) for x in r.json()]
+        else:
+            return []
     def get_harm_reference(self, reference_id: UUID) -> Harm_reference:
         r = requests.get(self.hr_url / reference_id)
         if r.ok:
