@@ -3,7 +3,7 @@ from p2f_pydantic.harm_data_metadata import harm_data_species as Harm_data_speci
 # Third Party Libraries
 import requests
 # Batteries included libraries
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 
 class harm_species:
@@ -14,7 +14,7 @@ class harm_species:
         self.harmonized_species_queue = []
     def add_harm_species(self, new_species: Harm_data_species):
         self.harmonized_species_queue.append(new_species)
-    def upload_harm_species_queue(self):
+    def upload_harm_species_queue(self) -> List[Harm_data_species]:
         inserted_species = []
         for record in self.harmonized_species_queue:
             r = requests.post(self.hds_url, data=record.model_dump_json(exclude_unset=True))
