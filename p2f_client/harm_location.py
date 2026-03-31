@@ -1,6 +1,7 @@
 # Local libraries
 from p2f_pydantic.harm_data_metadata import harm_location as Harm_location
 from p2f_pydantic.harm_data_metadata import harm_bounding_box as Harm_bounding_box
+from .conn import health_check
 # Third Party Libraries
 import requests
 from furl import furl
@@ -18,15 +19,17 @@ class harm_location:
         self.harmonized_location_queue.append(new_location)
     def upload_harm_locations(self):
         inserted_locations = []
-        for location in self.harmonized_location_queue:
-            r = requests.post(self.hdl_url, 
-                              data=location.model_dump_json(exclude_unset=True))
-            inserted_locations.append(Harm_location(**r.json()))
-        return inserted_locations
+        if health_check(self.base_url):
+            for location in self.harmonized_location_queue:
+                r = requests.post(self.hdl_url, 
+                                data=location.model_dump_json(exclude_unset=True))
+                inserted_locations.append(Harm_location(**r.json()))
+            return inserted_locations
     def upload_harm_location(self, new_location: Harm_location):
-        r = requests.post(self.hdl_url,
-                          data=new_location.model_dump_json(exclude_unset=True))
-        return Harm_location(**r.json())
+        if health_check(self.base_url):
+            r = requests.post(self.hdl_url,
+                            data=new_location.model_dump_json(exclude_unset=True))
+            return Harm_location(**r.json())
     def list_harm_locations(self,
                             bounding_box: Optional[Harm_bounding_box]=None,
                             location_name: Optional[str]=None, 
@@ -47,18 +50,22 @@ class harm_location:
             "dataset_id": dataset_id
             }
         params = {x: y for x, y in params.items() if y != None}
-        r = requests.get(self.hdl_url,
-                         params=params)
-        return [Harm_location(**x) for x in r.json()]
+        if health_check(self.base_url):
+            r = requests.get(self.hdl_url,
+                            params=params)
+            return [Harm_location(**x) for x in r.json()]
     def get_harm_location(self, location_identifier: UUID):
-        r = requests.get(self.hdl_url/str(location_identifier))
-        return Harm_location(**r.json())
+        if health_check(self.base_url):
+            r = requests.get(self.hdl_url/str(location_identifier))
+            return Harm_location(**r.json())
     def delete_harm_location(self, location_identifier: UUID):
-        r = requests.delete(self.hdl_url/str(location_identifier))
+        if health_check(self.base_url):
+            r = requests.delete(self.hdl_url/str(location_identifier))
     def assign_location_to_record(self, location_identifier: UUID, record_hash: str):
         # params = {"location_identifier": str(location_identifier),
         #           "record_hash": record_hash}
         assign_url = self.hdl_url / "assign"
         assign_url.args["location_identifier"] = str(location_identifier)
         assign_url.args["record_hash"] = record_hash
-        r = requests.post(assign_url)
+        if health_check(self.base_url):
+            r = requests.post(assign_url)

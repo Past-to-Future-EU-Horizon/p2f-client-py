@@ -5,6 +5,7 @@ from p2f_pydantic.harm_data_numerical import harmonized_float_confidence as Harm
 from p2f_pydantic.harm_data_numerical import harmonized_int as Harmonized_int
 from p2f_pydantic.harm_data_numerical import harmonized_int_confidence as Harmonized_int_confidence
 from p2f_pydantic.harm_data_numerical import return_harm_numerical as Return_harm_numerical
+from .conn import health_check
 # Third Party Libraries
 import requests
 from furl import furl
@@ -27,15 +28,17 @@ class harm_numerical:
         self.harmonized_numerical_records_queue.append(new_numerical_record)
     def upload_harm_numericals(self):
         inserted_numericals = []
-        for nummer in self.harmonized_numerical_records_queue:
-            r = requests.post(self.hdn_url,
-                              data=nummer.model_dump_json(exclude_unset=True))
-            inserted_numericals.append(self.identify_numeric_object(r.json(), nummer.model_dump_json(exclude_unset=True)))
-        return inserted_numericals
+        if health_check(self.base_url):
+            for nummer in self.harmonized_numerical_records_queue:
+                r = requests.post(self.hdn_url,
+                                data=nummer.model_dump_json(exclude_unset=True))
+                inserted_numericals.append(self.identify_numeric_object(r.json(), nummer.model_dump_json(exclude_unset=True)))
+            return inserted_numericals
     def upload_harm_numerical(self, new_record: Insert_harm_numerical):
-        r = requests.post(self.hdn_url,
-                          data=new_record.model_dump_json(exclude_unset=True))
-        return self.identify_numeric_object(r.json(), new_record.model_dump(exclude_unset=True))
+        if health_check(self.base_url):
+            r = requests.post(self.hdn_url,
+                            data=new_record.model_dump_json(exclude_unset=True))
+            return self.identify_numeric_object(r.json(), new_record.model_dump(exclude_unset=True))
     def list_harm_numericals(self, 
                              record_hash: Optional[str]=None,
                              numeric_type: Optional[Literal["float_confidence", 
@@ -51,9 +54,10 @@ class harm_numerical:
             "dataset_id": dataset_id
         }
         params = {x:y for x, y in params.items() if y != None}
-        r = requests.get(self.hdn_url, 
-                         params=params)
-        return Return_harm_numerical(**r.json())
+        if health_check(self.base_url):
+            r = requests.get(self.hdn_url, 
+                            params=params)
+            return Return_harm_numerical(**r.json())
     def identify_numeric_object(self, 
                                 incoming_json, 
                                 original: Optional[Insert_harm_numerical]=None) -> Harm_numerical_union:
