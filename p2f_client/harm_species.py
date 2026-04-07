@@ -9,7 +9,7 @@ from typing import Optional, List
 from uuid import UUID
 
 class harm_species:
-    def __init__(self, p2fclient: P2F_Client):
+    def __init__(self, p2fclient):
         self.base_url = p2fclient.base_url
         self.prefix = "harm-data-species"
         self.hds_url = self.base_url / self.prefix

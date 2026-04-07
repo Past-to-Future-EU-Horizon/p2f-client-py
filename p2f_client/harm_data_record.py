@@ -13,7 +13,7 @@ import hashlib
 from datetime import datetime
 
 class harm_data_records:
-    def __init__(self, p2fclient: P2F_Client):
+    def __init__(self, p2fclient):
         self.base_url = self.base_url = p2fclient.base_url
         self.prefix = "harm-data-records"
         self.hdr_url = self.base_url / self.prefix

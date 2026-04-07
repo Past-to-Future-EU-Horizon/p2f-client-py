@@ -1,4 +1,3 @@
-from .p2f_client import P2F_Client
 import requests
 from furl import furl
 

@@ -10,7 +10,7 @@ from uuid import UUID
 from typing import Optional, List
 
 class harm_data_type:
-    def __init__(self, p2fclient: P2F_Client):
+    def __init__(self, p2fclient):
         self.base_url = p2fclient.base_url
         self.prefix = "harm-data-types"
         self.hdt_url = self.base_url / self.prefix

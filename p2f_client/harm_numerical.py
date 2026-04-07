@@ -20,7 +20,7 @@ Harm_numerical_union = Union[Harmonized_float_confidence,
                              Harmonized_int]
 
 class harm_numerical:
-    def __init__(self, p2fclient: P2F_Client):
+    def __init__(self, p2fclient):
         self.base_url = p2fclient.base_url
         self.prefix = "harm-numerical"
         self.hdn_url = self.base_url / self.prefix

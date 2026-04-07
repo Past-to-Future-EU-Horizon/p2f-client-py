@@ -11,7 +11,7 @@ from uuid import UUID
 from typing import Optional, List, Union
 
 class harm_location:
-    def __init__(self, p2fclient: P2F_Client):
+    def __init__(self, p2fclient):
         self.base_url = p2fclient.base_url
         self.prefix = "harm-data-locations"
         self.hdl_url = self.base_url / self.prefix
