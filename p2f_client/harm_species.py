@@ -1,5 +1,5 @@
 # Local libraries
-from p2f_pydantic.harm_data_metadata import harm_data_species as Harm_data_species
+from p2f_pydantic.harm_data_metadata import HARM_Data_Species
 from .conn import health_check
 # Third Party Libraries
 import requests
@@ -13,20 +13,20 @@ class harm_species:
         self.prefix = "harm-data-species"
         self.hds_url = self.base_url / self.prefix
         self.harmonized_species_queue = []
-    def add_harm_species(self, new_species: Harm_data_species):
+    def add_harm_species(self, new_species: HARM_Data_Species):
         self.harmonized_species_queue.append(new_species)
-    def upload_harm_species_queue(self) -> List[Harm_data_species]:
+    def upload_harm_species_queue(self) -> List[HARM_Data_Species]:
         inserted_species = []
         if health_check(self.base_url):
             for record in self.harmonized_species_queue:
                 r = requests.post(self.hds_url, data=record.model_dump_json(exclude_unset=True))
-                inserted_species.append(Harm_data_species(**r.json()))
+                inserted_species.append(HARM_Data_Species(**r.json()))
             return inserted_species
-    def upload_harm_species(self, new_species: Harm_data_species):
+    def upload_harm_species(self, new_species: HARM_Data_Species):
         if health_check(self.base_url):
             r = requests.post(self.hds_url, 
                             data=new_species.model_dump_json(exclude_unset=True))
-            return Harm_data_species(**r.json())
+            return HARM_Data_Species(**r.json())
     def list_harm_species(self, 
                           tax_domain: Optional[str]=None,
                           tax_kingdom: Optional[str]=None,
@@ -44,7 +44,7 @@ class harm_species:
                           tax_species: Optional[str]=None,
                           tax_subspecies: Optional[str]=None,
                           common_name: Optional[str]=None,
-                          display_species: Optional[str]=None,) -> Harm_data_species:
+                          display_species: Optional[str]=None,) -> HARM_Data_Species:
         params = {x: y for x, y in locals().items() if x.startswith("tax_")}
         params["common_name"] = common_name
         params["display_species"] = display_species
@@ -52,11 +52,11 @@ class harm_species:
         if health_check(self.base_url):
             r = requests.get(self.hds_url, 
                             params=params)
-            return [Harm_data_species(**x) for x in r.json()]
+            return [HARM_Data_Species(**x) for x in r.json()]
     def get_harm_species(self, species_identifier: UUID):
         if health_check(self.base_url):
             r = requests.get(self.hds_url/species_identifier)
-            return Harm_data_species(**r.json())
+            return HARM_Data_Species(**r.json())
     def delete_harm_species(self, species_identifier: UUID):
         if health_check(self.base_url):
             r = requests.delete(self.hds_url/species_identifier)

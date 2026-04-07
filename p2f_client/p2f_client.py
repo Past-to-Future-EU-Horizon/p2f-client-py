@@ -23,9 +23,10 @@ class P2F_Client:
                  hostname: str, 
                  port: int=443, 
                  https: bool=True, 
+                 email: Optional[str]=None, 
                  token: Optional[str] = None, 
                  token_expiration: Optional[datetime]=None):
-        self.version = (0, 0, 6) # turn this into a real named tuple one day
+        self.version = (0, 0, 7) # turn this into a real named tuple one day
         self.hostname = hostname
         self.port = port
         if https:
@@ -34,7 +35,7 @@ class P2F_Client:
             self.protocol = "http"
         self.host_url = f"{self.protocol}://{self.hostname}:{self.port}"
         self.base_url = furl.furl(self.host_url)
-        self.datasets = datasets(self.base_url)
+        self.email= email
         self.token = token
         if self.token is not None:
             if token_expiration is None:
@@ -46,6 +47,7 @@ class P2F_Client:
         self.child_class_loading()
     def child_class_loading(self):
         # Separated this out so we can reload it later. 
+        self.datasets = datasets(self)
         self.harm_data_records = harm_data_records(self)
         self.harm_data_type = harm_data_type(self)
         self.harm_numerical = harm_numerical(self)
@@ -53,11 +55,11 @@ class P2F_Client:
         self.harm_species = harm_species(self)
         self.harm_timeslice = harm_timeslice(self)
         self.harm_reference = harm_reference(self)
-    def request_token(self, email):
-        self.email = email
-        self.token_url = self.host_url / "token"
+    def request_token(self):
+        # self.email = email
+        self.token_url = self.base_url / "token"
         self.token_request_url = self.token_url / "request"
-        token_request_model = Temp_Account(email=email)
+        token_request_model = Temp_Account(email=self.email)
         # calculate the datetime of the token before making the request
         #    so that our expiration time is just before actual expiration. 
         self.TOKEN_EXPIRATION = datetime.now(tz=ZoneInfo("UTC")) + timedelta(hours=24)
@@ -66,5 +68,8 @@ class P2F_Client:
             print(r.json())
     def set_token(self, token: str):
         self.token = token
+        self.temp_account = Temp_Account(email=self.email, token=self.token)
         # reload the child classes so they will have the token
         self.child_class_loading()
+    def json_serialize_with_auth(self, label: str, json: str):
+        return f"""{{"auth":{self.temp_account.model_dump_json(exclude_unset=True)},{label}:{json}}}"""

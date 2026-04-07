@@ -1,5 +1,5 @@
 # Local libraries
-from p2f_pydantic.harm_timeslices import harm_timeslice as Harm_timeslice
+from p2f_pydantic.harm_timeslices import HARM_Timeslice
 from .conn import health_check
 # Third Party Libraries
 import requests
@@ -13,7 +13,7 @@ class harm_timeslice:
         self.prefix = "harm-timeslice"
         self.ht_url = self.base_url / self.prefix
         self.harmonized_timeslice_queue = []
-    def add_timeslice(self, new_timeslice: Harm_timeslice):
+    def add_timeslice(self, new_timeslice: HARM_Timeslice):
         self.harmonized_timeslice_queue.append(new_timeslice)
     def upload_timeslice_queue(self):
         inserted_timeslice_list = []
@@ -21,17 +21,17 @@ class harm_timeslice:
             for timeslice in self.harmonized_timeslice_queue:
                 r = requests.post(self.ht_url, 
                                 data=timeslice.model_dump_json(exclude_unset=True))
-                inserted_timeslice_list.append(Harm_timeslice(**r.json()))
+                inserted_timeslice_list.append(HARM_Timeslice(**r.json()))
             return inserted_timeslice_list
-    def upload_timeslice(self, new_timeslice: Harm_timeslice) -> Harm_timeslice:
+    def upload_timeslice(self, new_timeslice: HARM_Timeslice) -> HARM_Timeslice:
         if health_check(self.base_url):
             r = requests.post(self.ht_url, 
                             data=new_timeslice.model_dump_json(exclude_unset=True))
-            return Harm_timeslice(**r.json())
+            return HARM_Timeslice(**r.json())
     def list_timeslices(self,
                         named_time_period: Optional[str]=None, 
                         older_search_age: Optional[int]=None,
-                        recent_search_age: Optional[int]=None,) -> List[Harm_timeslice]:
+                        recent_search_age: Optional[int]=None,) -> List[HARM_Timeslice]:
         params = {"named_time_period": named_time_period,
                   "older_search_age": older_search_age,
                   "recent_search_age": recent_search_age}
@@ -39,14 +39,14 @@ class harm_timeslice:
         if health_check(self.base_url):
             r = requests.get(self.ht_url, 
                             params=params)
-            return [Harm_timeslice(**x) for x in r.json()]
+            return [HARM_Timeslice(**x) for x in r.json()]
     def get_timeslice(self, 
-                      timeslice_id: UUID) -> Harm_timeslice:
+                      timeslice_id: UUID) -> HARM_Timeslice:
         if health_check(self.base_url):
             r = requests.get(self.ht_url / timeslice_id)
-            return Harm_timeslice(**r.json())
+            return HARM_Timeslice(**r.json())
     def delete_timeslice(self, 
-                         timeslice_id: UUID) -> Harm_timeslice:
+                         timeslice_id: UUID) -> HARM_Timeslice:
         if health_check(self.base_url):
             r = requests.delete(self.ht_url / timeslice_id)
     def assign_timeslice(self, 

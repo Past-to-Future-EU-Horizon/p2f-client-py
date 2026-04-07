@@ -1,5 +1,5 @@
 # Local libraries
-from p2f_pydantic.harm_data_record import harm_data_record as Harm_data_record
+from p2f_pydantic.harm_data_record import HARM_Data_Record
 from .conn import health_check
 # Third Party Libraries
 import requests
@@ -13,11 +13,11 @@ from datetime import datetime
 
 class harm_data_records:
     def __init__(self, p2fclient):
-        self.base_url = self.base_url = p2fclient.base_url
+        self.base_url = p2fclient.base_url
         self.prefix = "harm-data-records"
         self.hdr_url = self.base_url / self.prefix
         self.harm_data_records_queue = []
-    def add_data_record(self, data_record: Harm_data_record):
+    def add_data_record(self, data_record: HARM_Data_Record):
         self.harm_data_records_queue.append(data_record)
     def upload_data_records(self):
         uploaded_records = []
@@ -25,14 +25,14 @@ class harm_data_records:
             for record in self.harm_data_records_queue:
                 r = requests.post(self.hdr_url,
                                 data=record.model_dump_json(exclude_unset=True))
-                record.append(Harm_data_record(**r.json()))
+                record.append(HARM_Data_Record(**r.json()))
             self.uploaded_records = uploaded_records
             return uploaded_records
-    def upload_data_record(self, data_record: Harm_data_record):
+    def upload_data_record(self, data_record: HARM_Data_Record):
         if health_check(self.base_url):
             r = requests.post(self.hdr_url,
                             data=data_record.model_dump_json(exclude_unset=True))
-            return Harm_data_record(**r.json())
+            return HARM_Data_Record(**r.json())
     def list_remote_records(self, 
                             dataset: Optional[str]=None,
                             data_type: Optional[str]=None):
@@ -42,11 +42,11 @@ class harm_data_records:
         if health_check(self.base_url):
             r = requests.get(self.hdr_url,
                             data=params)
-            return [Harm_data_record(**x) for x in r.json()]
+            return [HARM_Data_Record(**x) for x in r.json()]
     def get_remote_record(self, record_hash: str):
         if health_check(self.base_url):
             r = requests.get(self.hdr_url / record_hash)
-            return Harm_data_record(**r.json())
+            return HARM_Data_Record(**r.json())
     def delete_remote_dataset(self, record_hash: str):
         if health_check(self.base_url):
             r = requests.delete(self.hdr_url / record_hash)

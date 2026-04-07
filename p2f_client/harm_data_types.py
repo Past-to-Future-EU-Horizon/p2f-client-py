@@ -1,5 +1,5 @@
 # Local libraries
-from p2f_pydantic.harm_data_types import harm_data_type as Harm_data_type
+from p2f_pydantic.harm_data_types import HARM_Data_Type
 from .conn import health_check
 # Third Party Libraries
 import requests
@@ -14,18 +14,18 @@ class harm_data_type:
         self.prefix = "harm-data-types"
         self.hdt_url = self.base_url / self.prefix
         self.harm_data_types_queue = []
-    def add_harm_data_type(self, new_data_type: Harm_data_type):
+    def add_harm_data_type(self, new_data_type: HARM_Data_Type):
         self.harm_data_types_queue.append(new_data_type)
     def upload_data_types(self):
         if health_check(self.base_url):
             for datatype in self.harm_data_types_queue:
                 r = requests.post(self.hdt_url,
                                 data=datatype.model_dump_json(exclude_unset=True))
-    def upload_data_type(self, new_data_type: Harm_data_type):
+    def upload_data_type(self, new_data_type: HARM_Data_Type):
         if health_check(self.base_url):
             r = requests.post(self.hdt_url,
                             data=new_data_type.model_dump_json(exclude_unset=True))
-            return Harm_data_type(**r.json())
+            return HARM_Data_Type(**r.json())
     def list_data_types(self, 
                         measure: Optional[str]=None,
                         unit_of_measure: Optional[str]=None,
@@ -39,11 +39,11 @@ class harm_data_type:
         if health_check(self.base_url):
             r = requests.get(self.hdt_url,
                             params=params)
-            return [Harm_data_type(**x) for x in r.json()]
+            return [HARM_Data_Type(**x) for x in r.json()]
     def get_data_type(self, datatype_id: UUID):
         if health_check(self.base_url):
             r = requests.get(self.hdt_url / datatype_id)
-            return Harm_data_type(**r.json())
+            return HARM_Data_Type(**r.json())
     def delete_data_type(self, datatype_id: UUID):
         if health_check(self.base_url):
             r = requests.delete(self.hdt_url / datatype_id)

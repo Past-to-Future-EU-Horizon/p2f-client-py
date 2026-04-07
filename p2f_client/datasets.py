@@ -10,8 +10,9 @@ from typing import Optional, List
 
 class datasets:
     def __init__(self, p2fclient):
+        self.p2fclient = p2fclient
         self.base_url = p2fclient.base_url
-        self.prefix = "datasets"
+        self.prefix = "datasets/"
         self.dataset_url = self.base_url / self.prefix
         self.upload_queue = []
     def add_dataset(self, dataset: Datasets):
@@ -21,7 +22,7 @@ class datasets:
         if health_check(self.base_url):
             for dataset in self.upload_queue:
                 r = requests.post(self.dataset_url,
-                                data=dataset.model_dump_json(exclude_unset=True))
+                                data=self.p2fclient.json_serialize_with_auth("dataset", dataset.model_dump_json(exclude_unset=True)))
                 uploaded_datasets.append(Datasets(**r.json()))
             # self.uploaded_datasets = uploaded_datasets
             return uploaded_datasets

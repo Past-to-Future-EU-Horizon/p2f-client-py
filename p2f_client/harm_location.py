@@ -1,6 +1,5 @@
 # Local libraries
-from p2f_pydantic.harm_data_metadata import harm_location as Harm_location
-from p2f_pydantic.harm_data_metadata import harm_bounding_box as Harm_bounding_box
+from p2f_pydantic.harm_data_metadata import HARM_Bounding_Box, HARM_Location
 from .conn import health_check
 # Third Party Libraries
 import requests
@@ -15,7 +14,7 @@ class harm_location:
         self.prefix = "harm-data-locations"
         self.hdl_url = self.base_url / self.prefix
         self.harmonized_location_queue = []
-    def add_harm_location(self, new_location: Harm_location):
+    def add_harm_location(self, new_location: HARM_Location):
         self.harmonized_location_queue.append(new_location)
     def upload_harm_locations(self):
         inserted_locations = []
@@ -23,15 +22,15 @@ class harm_location:
             for location in self.harmonized_location_queue:
                 r = requests.post(self.hdl_url, 
                                 data=location.model_dump_json(exclude_unset=True))
-                inserted_locations.append(Harm_location(**r.json()))
+                inserted_locations.append(HARM_Location(**r.json()))
             return inserted_locations
-    def upload_harm_location(self, new_location: Harm_location):
+    def upload_harm_location(self, new_location: HARM_Location):
         if health_check(self.base_url):
             r = requests.post(self.hdl_url,
                             data=new_location.model_dump_json(exclude_unset=True))
-            return Harm_location(**r.json())
+            return HARM_Location(**r.json())
     def list_harm_locations(self,
-                            bounding_box: Optional[Harm_bounding_box]=None,
+                            bounding_box: Optional[HARM_Bounding_Box]=None,
                             location_name: Optional[str]=None, 
                             location_code: Optional[str]=None, 
                             minimum_elevation: Optional[float]=None,
@@ -53,11 +52,11 @@ class harm_location:
         if health_check(self.base_url):
             r = requests.get(self.hdl_url,
                             params=params)
-            return [Harm_location(**x) for x in r.json()]
+            return [HARM_Location(**x) for x in r.json()]
     def get_harm_location(self, location_identifier: UUID):
         if health_check(self.base_url):
             r = requests.get(self.hdl_url/str(location_identifier))
-            return Harm_location(**r.json())
+            return HARM_Location(**r.json())
     def delete_harm_location(self, location_identifier: UUID):
         if health_check(self.base_url):
             r = requests.delete(self.hdl_url/str(location_identifier))
