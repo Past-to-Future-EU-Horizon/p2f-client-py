@@ -23,8 +23,7 @@ def health_probe(base_url):
             raise requests.exceptions.HTTPError("The client could not connect to the API server.")
     return health_probe_func_level
 
-def health_check(p2fclient: P2F_Client):
-    base_url = p2fclient.base_url
+def health_check(base_url: furl):
     prefix = "health-check"
     healthcheck_url = base_url / f"{prefix}/"
     r = requests.get(healthcheck_url)

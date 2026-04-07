@@ -13,13 +13,19 @@ from p2f_pydantic.temp_accounts import Temp_Account
 import requests
 import furl
 # Batteries included libraries
-from datetime import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
+from typing import Optional
 
 
 class P2F_Client:
-    def __init__(self, hostname, port: int=443, https: bool=True):
-        self.version = (0, 0, 3) # turn this into a real named tuple one day
+    def __init__(self, 
+                 hostname: str, 
+                 port: int=443, 
+                 https: bool=True, 
+                 token: Optional[str] = None, 
+                 token_expiration: Optional[datetime]=None):
+        self.version = (0, 0, 4) # turn this into a real named tuple one day
         self.hostname = hostname
         self.port = port
         if https:
@@ -29,6 +35,14 @@ class P2F_Client:
         self.host_url = f"{self.protocol}://{self.hostname}:{self.port}"
         self.base_url = furl.furl(self.host_url)
         self.datasets = datasets(self.base_url)
+        self.token = token
+        if self.token is not None:
+            if token_expiration is None:
+                # It's not true, but it does inform us that the token could possibly last till tomorrow
+                self.TOKEN_EXPIRATION = datetime.now(tz=ZoneInfo("UTC")) + timedelta(hours=24)
+                raise UserWarning("A generic token expiration time was used, the token could expire sooner than the currently set token expiration time")
+            else: 
+                self.TOKEN_EXPIRATION = token_expiration
         self.child_class_loading()
     def child_class_loading(self):
         # Separated this out so we can reload it later. 
@@ -46,7 +60,7 @@ class P2F_Client:
         token_request_model = Temp_Account(email=email)
         # calculate the datetime of the token before making the request
         #    so that our expiration time is just before actual expiration. 
-        self.TOKEN_EXPIRATION = datetime.now(tz=ZoneInfo("UTC"))
+        self.TOKEN_EXPIRATION = datetime.now(tz=ZoneInfo("UTC")) + timedelta(hours=24)
         if health_check(self.base_url):
             r = requests.post(self.token_request_url, data=token_request_model.model_dump_json(exclude_unset=True))
             print(r.json())
