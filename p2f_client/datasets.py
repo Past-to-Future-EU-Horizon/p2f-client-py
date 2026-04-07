@@ -22,14 +22,16 @@ class datasets:
         if health_check(self.base_url):
             for dataset in self.upload_queue:
                 r = requests.post(self.dataset_url,
-                                data=self.p2fclient.json_serialize_with_auth("dataset", dataset.model_dump_json(exclude_unset=True)))
+                                data=self.p2fclient.json_serialize_with_auth("dataset", dataset.model_dump_json(exclude_unset=True)),
+                                headers={"Content-Type": "application/json"})
                 uploaded_datasets.append(Datasets(**r.json()))
             # self.uploaded_datasets = uploaded_datasets
             return uploaded_datasets
     def upload_dataset(self, dataset: Datasets):
         if health_check(self.base_url):
             r = requests.post(self.dataset_url,
-                            data=dataset.model_dump_json(exclude_unset=True))
+                            data=self.p2fclient.json_serialize_with_auth("dataset", dataset.model_dump_json(exclude_unset=True)),
+                            headers={"Content-Type": "application/json"})
             return Datasets(**r.json())
     def list_remote_datasets(self, 
                              is_new_p2f: Optional[bool]=None,
@@ -47,15 +49,18 @@ class datasets:
             list_url.args["doi"] = doi
             # data["doi"] = doi
         if health_check(self.base_url):
-            r = requests.get(list_url)
+            r = requests.get(list_url, data=self.p2fclient.json_serialize_with_auth(),
+                            headers={"Content-Type": "application/json"})
             # self.datasets = [Datasets(**x) for x in r.json()]
             return [Datasets(**x) for x in r.json()]
     def get_remote_dataset(self, dataset_id):
         get_url = self.dataset_url / str(dataset_id)
         if health_check(self.base_url):
-            r = requests.get(get_url)
+            r = requests.get(get_url, data=self.p2fclient.jsonserialize_with_auth(),
+                            headers={"Content-Type": "application/json"})
             return Datasets(**r.json())
     def delete_remote_dataset(self, dataset_id):
         delete_url = self.dataset_url / str(dataset_id)
         if health_check(self.base_url):
-            r = requests.delete(delete_url)
+            r = requests.delete(delete_url, data=self.p2fclient.json_serialize_with_auth(),
+                            headers={"Content-Type": "application/json"})

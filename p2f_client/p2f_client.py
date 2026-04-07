@@ -26,7 +26,7 @@ class P2F_Client:
                  email: Optional[str]=None, 
                  token: Optional[str] = None, 
                  token_expiration: Optional[datetime]=None):
-        self.version = (0, 0, 7) # turn this into a real named tuple one day
+        self.version = (0, 0, 8) # turn this into a real named tuple one day
         self.hostname = hostname
         self.port = port
         if https:
@@ -64,12 +64,19 @@ class P2F_Client:
         #    so that our expiration time is just before actual expiration. 
         self.TOKEN_EXPIRATION = datetime.now(tz=ZoneInfo("UTC")) + timedelta(hours=24)
         if health_check(self.base_url):
-            r = requests.post(self.token_request_url, data=token_request_model.model_dump_json(exclude_unset=True))
+            r = requests.post(self.token_request_url, 
+                              data=token_request_model.model_dump_json(exclude_unset=True),
+                              headers={"Content-Type": "application/json"})
             print(r.json())
     def set_token(self, token: str):
         self.token = token
         self.temp_account = Temp_Account(email=self.email, token=self.token)
         # reload the child classes so they will have the token
         self.child_class_loading()
-    def json_serialize_with_auth(self, label: str, json: str):
-        return f"""{{"auth":{self.temp_account.model_dump_json(exclude_unset=True)},{label}:{json}}}"""
+    def json_serialize_with_auth(self, 
+                                 label: Optional[str]=None, 
+                                 JSON_str: Optional[str]=None):
+        if label is not None:
+            return f"""{{"auth":{self.temp_account.model_dump_json(exclude_unset=True)},"{label}":{JSON_str}}}"""
+        if label is None:
+            return self.temp_account.model_dump_json(exclude_unset=True)

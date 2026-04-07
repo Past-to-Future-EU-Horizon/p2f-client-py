@@ -4,17 +4,18 @@ from .conn import health_check
 # Third Party Libraries
 import requests
 from furl import furl
-import pytz
 # Batteries included libraries
 from uuid import UUID
 from typing import Optional, List
 import hashlib
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 class harm_data_records:
     def __init__(self, p2fclient):
+        self.p2fclient = p2fclient
         self.base_url = p2fclient.base_url
-        self.prefix = "harm-data-records"
+        self.prefix = "harm-data-records/"
         self.hdr_url = self.base_url / self.prefix
         self.harm_data_records_queue = []
     def add_data_record(self, data_record: HARM_Data_Record):
@@ -24,14 +25,16 @@ class harm_data_records:
         if health_check(self.base_url):
             for record in self.harm_data_records_queue:
                 r = requests.post(self.hdr_url,
-                                data=record.model_dump_json(exclude_unset=True))
+                                data=self.p2fclient.json_serialize_with_auth("new_data_record", record.model_dump_json(exclude_unset=True)),
+                            headers={"Content-Type": "application/json"})
                 record.append(HARM_Data_Record(**r.json()))
             self.uploaded_records = uploaded_records
             return uploaded_records
     def upload_data_record(self, data_record: HARM_Data_Record):
         if health_check(self.base_url):
             r = requests.post(self.hdr_url,
-                            data=data_record.model_dump_json(exclude_unset=True))
+                            data=self.p2fclient.json_serialize_with_auth("new_data_record", data_record.model_dump_json(exclude_unset=True)),
+                            headers={"Content-Type": "application/json"})
             return HARM_Data_Record(**r.json())
     def list_remote_records(self, 
                             dataset: Optional[str]=None,
@@ -41,19 +44,22 @@ class harm_data_records:
         params = {x:y for x, y in params.items() if y != None}
         if health_check(self.base_url):
             r = requests.get(self.hdr_url,
-                            data=params)
+                            params=params, data=self.p2fclient.json_serialize_with_auth(),
+                            headers={"Content-Type": "application/json"})
             return [HARM_Data_Record(**x) for x in r.json()]
     def get_remote_record(self, record_hash: str):
         if health_check(self.base_url):
-            r = requests.get(self.hdr_url / record_hash)
+            r = requests.get(self.hdr_url / record_hash, data=self.p2fclient.json_serialize_with_auth(),
+                            headers={"Content-Type": "application/json"})
             return HARM_Data_Record(**r.json())
     def delete_remote_dataset(self, record_hash: str):
         if health_check(self.base_url):
-            r = requests.delete(self.hdr_url / record_hash)
+            r = requests.delete(self.hdr_url / record_hash, data=self.p2fclient.json_serialize_with_auth(),
+                            headers={"Content-Type": "application/json"})
     def calculate_hash(self, dataset_id, row_number, debugging=False):
         hasher = hashlib.md5()
         hasher.update(str(dataset_id).encode("utf8"))
         hasher.update(str(row_number).encode("utf8"))
         if debugging == True:
-            hasher.update(str(datetime.now(tz=pytz.UTC).isoformat(sep="T")).encode("utf8"))
+            hasher.update(str(datetime.now(tz=ZoneInfo("UTC")).isoformat(sep="T")).encode("utf8"))
         return str(hasher.hexdigest())

@@ -10,8 +10,9 @@ from typing import Optional, List, Union
 
 class harm_location:
     def __init__(self, p2fclient):
+        self.p2fclient = p2fclient
         self.base_url = p2fclient.base_url
-        self.prefix = "harm-data-locations"
+        self.prefix = "harm-data-locations/"
         self.hdl_url = self.base_url / self.prefix
         self.harmonized_location_queue = []
     def add_harm_location(self, new_location: HARM_Location):
@@ -21,13 +22,15 @@ class harm_location:
         if health_check(self.base_url):
             for location in self.harmonized_location_queue:
                 r = requests.post(self.hdl_url, 
-                                data=location.model_dump_json(exclude_unset=True))
+                                  data=self.p2fclient.json_serialize_with_auth("new_location", location.model_dump_json(exclude_unset=True)),
+                            headers={"Content-Type": "application/json"})
                 inserted_locations.append(HARM_Location(**r.json()))
             return inserted_locations
     def upload_harm_location(self, new_location: HARM_Location):
         if health_check(self.base_url):
-            r = requests.post(self.hdl_url,
-                            data=new_location.model_dump_json(exclude_unset=True))
+            r = requests.post(self.hdl_url, 
+                              data=self.p2fclient.json_serialize_with_auth("new_location", new_location.model_dump_json(exclude_unset=True)),
+                            headers={"Content-Type": "application/json"})
             return HARM_Location(**r.json())
     def list_harm_locations(self,
                             bounding_box: Optional[HARM_Bounding_Box]=None,
@@ -51,15 +54,18 @@ class harm_location:
         params = {x: y for x, y in params.items() if y != None}
         if health_check(self.base_url):
             r = requests.get(self.hdl_url,
-                            params=params)
+                            params=params, data=self.p2fclient.json_serialize_with_auth(),
+                            headers={"Content-Type": "application/json"})
             return [HARM_Location(**x) for x in r.json()]
     def get_harm_location(self, location_identifier: UUID):
         if health_check(self.base_url):
-            r = requests.get(self.hdl_url/str(location_identifier))
+            r = requests.get(self.hdl_url/str(location_identifier), data=self.p2fclient.json_serialize_with_auth(),
+                            headers={"Content-Type": "application/json"})
             return HARM_Location(**r.json())
     def delete_harm_location(self, location_identifier: UUID):
         if health_check(self.base_url):
-            r = requests.delete(self.hdl_url/str(location_identifier))
+            r = requests.delete(self.hdl_url/str(location_identifier), data=self.p2fclient.json_serialize_with_auth(),
+                            headers={"Content-Type": "application/json"})
     def assign_location_to_record(self, location_identifier: UUID, record_hash: str):
         # params = {"location_identifier": str(location_identifier),
         #           "record_hash": record_hash}
@@ -67,4 +73,5 @@ class harm_location:
         assign_url.args["location_identifier"] = str(location_identifier)
         assign_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
-            r = requests.post(assign_url)
+            r = requests.post(assign_url, data=self.p2fclient.json_serialize_with_auth(),
+                            headers={"Content-Type": "application/json"})

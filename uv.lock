@@ -193,7 +193,7 @@ wheels = [
 
 [[package]]
 name = "p2f-client-py"
-version = "0.0.6"
+version = "0.0.7"
 source = { virtual = "." }
 dependencies = [
     { name = "furl" },
