@@ -19,6 +19,7 @@ from zoneinfo import ZoneInfo
 
 class P2F_Client:
     def __init__(self, hostname, port: int=443, https: bool=True):
+        self.version = (0, 0, 3) # turn this into a real named tuple one day
         self.hostname = hostname
         self.port = port
         if https:
@@ -31,13 +32,13 @@ class P2F_Client:
         self.child_class_loading()
     def child_class_loading(self):
         # Separated this out so we can reload it later. 
-        self.harm_data_records = harm_data_records(self.base_url)
-        self.harm_data_type = harm_data_type(self.base_url)
-        self.harm_numerical = harm_numerical(self.base_url)
-        self.harm_location = harm_location(self.base_url)
-        self.harm_species = harm_species(self.base_url)
-        self.harm_timeslice = harm_timeslice(self.base_url)
-        self.harm_reference = harm_reference(self.base_url)
+        self.harm_data_records = harm_data_records(self)
+        self.harm_data_type = harm_data_type(self)
+        self.harm_numerical = harm_numerical(self)
+        self.harm_location = harm_location(self)
+        self.harm_species = harm_species(self)
+        self.harm_timeslice = harm_timeslice(self)
+        self.harm_reference = harm_reference(self)
     def request_token(self, email):
         self.email = email
         self.token_url = self.host_url / "token"
@@ -49,7 +50,7 @@ class P2F_Client:
         if health_check(self.base_url):
             r = requests.post(self.token_request_url, data=token_request_model.model_dump_json(exclude_unset=True))
             print(r.json())
-    def set_token(self, token):
+    def set_token(self, token: str):
         self.token = token
         # reload the child classes so they will have the token
         self.child_class_loading()

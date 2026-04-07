@@ -1,5 +1,6 @@
 # Local libraries
 from p2f_pydantic.datasets import Datasets
+from .p2f_client import P2F_Client
 from .conn import health_check
 # Third Party Libraries
 import requests
@@ -9,8 +10,8 @@ from uuid import UUID
 from typing import Optional, List
 
 class datasets:
-    def __init__(self, base_url):
-        self.base_url = furl(base_url)
+    def __init__(self, p2fclient: P2F_Client):
+        self.base_url = p2fclient.base_url
         self.prefix = "datasets"
         self.dataset_url = self.base_url / self.prefix
         self.upload_queue = []

@@ -1,3 +1,4 @@
+from .p2f_client import P2F_Client
 import furl
 
 class doi:

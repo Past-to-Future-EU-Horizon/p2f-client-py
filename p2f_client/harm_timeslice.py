@@ -1,5 +1,6 @@
 # Local libraries
 from p2f_pydantic.harm_timeslices import harm_timeslice as Harm_timeslice
+from .p2f_client import P2F_Client
 from .conn import health_check
 # Third Party Libraries
 import requests
@@ -8,8 +9,8 @@ from uuid import UUID
 from typing import Optional, List
 
 class harm_timeslice:
-    def __init__(self, base_url):
-        self.base_url = base_url
+    def __init__(self, p2fclient: P2F_Client):
+        self.base_url = p2fclient.base_url
         self.prefix = "harm-timeslice"
         self.ht_url = self.base_url / self.prefix
         self.harmonized_timeslice_queue = []

@@ -1,6 +1,7 @@
 # Local libraries
 from p2f_pydantic.harm_data_metadata import harm_location as Harm_location
 from p2f_pydantic.harm_data_metadata import harm_bounding_box as Harm_bounding_box
+from .p2f_client import P2F_Client
 from .conn import health_check
 # Third Party Libraries
 import requests
@@ -10,8 +11,8 @@ from uuid import UUID
 from typing import Optional, List, Union
 
 class harm_location:
-    def __init__(self, base_url):
-        self.base_url = base_url
+    def __init__(self, p2fclient: P2F_Client):
+        self.base_url = p2fclient.base_url
         self.prefix = "harm-data-locations"
         self.hdl_url = self.base_url / self.prefix
         self.harmonized_location_queue = []

@@ -5,6 +5,7 @@ from p2f_pydantic.harm_data_numerical import harmonized_float_confidence as Harm
 from p2f_pydantic.harm_data_numerical import harmonized_int as Harmonized_int
 from p2f_pydantic.harm_data_numerical import harmonized_int_confidence as Harmonized_int_confidence
 from p2f_pydantic.harm_data_numerical import return_harm_numerical as Return_harm_numerical
+from .p2f_client import P2F_Client
 from .conn import health_check
 # Third Party Libraries
 import requests
@@ -19,8 +20,8 @@ Harm_numerical_union = Union[Harmonized_float_confidence,
                              Harmonized_int]
 
 class harm_numerical:
-    def __init__(self, base_url):
-        self.base_url = furl(base_url)
+    def __init__(self, p2fclient: P2F_Client):
+        self.base_url = p2fclient.base_url
         self.prefix = "harm-numerical"
         self.hdn_url = self.base_url / self.prefix
         self.harmonized_numerical_records_queue = []

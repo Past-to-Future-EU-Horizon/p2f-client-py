@@ -1,5 +1,6 @@
 # Local libraries
 from p2f_pydantic.harm_data_metadata import harm_data_species as Harm_data_species
+from .p2f_client import P2F_Client
 from .conn import health_check
 # Third Party Libraries
 import requests
@@ -8,8 +9,8 @@ from typing import Optional, List
 from uuid import UUID
 
 class harm_species:
-    def __init__(self, base_url):
-        self.base_url = base_url
+    def __init__(self, p2fclient: P2F_Client):
+        self.base_url = p2fclient.base_url
         self.prefix = "harm-data-species"
         self.hds_url = self.base_url / self.prefix
         self.harmonized_species_queue = []
