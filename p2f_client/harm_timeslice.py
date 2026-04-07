@@ -1,6 +1,5 @@
 # Local libraries
 from p2f_pydantic.harm_timeslices import harm_timeslice as Harm_timeslice
-from .p2f_client import P2F_Client
 from .conn import health_check
 # Third Party Libraries
 import requests

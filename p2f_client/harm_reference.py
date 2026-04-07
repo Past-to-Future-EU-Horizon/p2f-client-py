@@ -1,6 +1,5 @@
 # Local libraries
 from p2f_pydantic.harm_reference import harm_reference as Harm_reference
-from .p2f_client import P2F_Client
 from .conn import health_check
 # Third Party Libraries
 import requests

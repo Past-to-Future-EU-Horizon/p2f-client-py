@@ -5,7 +5,6 @@ from p2f_pydantic.harm_data_numerical import harmonized_float_confidence as Harm
 from p2f_pydantic.harm_data_numerical import harmonized_int as Harmonized_int
 from p2f_pydantic.harm_data_numerical import harmonized_int_confidence as Harmonized_int_confidence
 from p2f_pydantic.harm_data_numerical import return_harm_numerical as Return_harm_numerical
-from .p2f_client import P2F_Client
 from .conn import health_check
 # Third Party Libraries
 import requests
