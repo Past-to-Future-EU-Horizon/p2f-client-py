@@ -26,7 +26,7 @@ class P2F_Client:
                  email: Optional[str]=None, 
                  token: Optional[str] = None, 
                  token_expiration: Optional[datetime]=None):
-        self.version = (0, 0, 8) # turn this into a real named tuple one day
+        self.version = (0, 0, 9) # turn this into a real named tuple one day
         self.hostname = hostname
         self.port = port
         if https:
@@ -44,6 +44,8 @@ class P2F_Client:
                 raise UserWarning("A generic token expiration time was used, the token could expire sooner than the currently set token expiration time")
             else: 
                 self.TOKEN_EXPIRATION = token_expiration
+            if self.email is not None:
+                self.temp_account = Temp_Account(email=self.email, token=self.token)
         self.child_class_loading()
     def child_class_loading(self):
         # Separated this out so we can reload it later. 
