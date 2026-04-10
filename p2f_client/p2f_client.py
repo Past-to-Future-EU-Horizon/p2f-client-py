@@ -26,7 +26,7 @@ class P2F_Client:
                  email: Optional[str]=None, 
                  token: Optional[str] = None, 
                  token_expiration: Optional[datetime]=None):
-        self.version = (0, 0, 9) # turn this into a real named tuple one day
+        self.version = (0, 0, 10) # turn this into a real named tuple one day
         self.hostname = hostname
         self.port = port
         if https:

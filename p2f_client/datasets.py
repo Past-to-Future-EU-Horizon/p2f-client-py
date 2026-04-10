@@ -56,7 +56,7 @@ class datasets:
     def get_remote_dataset(self, dataset_id):
         get_url = self.dataset_url / str(dataset_id)
         if health_check(self.base_url):
-            r = requests.get(get_url, data=self.p2fclient.jsonserialize_with_auth(),
+            r = requests.get(get_url, data=self.p2fclient.json_serialize_with_auth(),
                             headers={"Content-Type": "application/json"})
             return Datasets(**r.json())
     def delete_remote_dataset(self, dataset_id):
