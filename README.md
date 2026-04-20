@@ -19,3 +19,6 @@ Create a client
 
     # request a token
     client.request_token()
+
+    # Open your local file and update the configuration with your new p2f token. 
+    client.set_token()

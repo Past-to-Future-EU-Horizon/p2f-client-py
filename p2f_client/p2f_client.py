@@ -49,6 +49,9 @@ class P2F_Client:
                 new_email = new_email[:-1]
             self.auth_email = new_email
             self.dotp2f_update_config_parameter("EMAIL", new_email)
+        elif self.auth_email == None and email is not None:
+            self.auth_email = email
+            self.dotp2f_update_config_parameter("EMAIL", new_email)
         if self.auth_token is None:
             if self.auth_token_expiration is None:
                 if self.auth_email is not None:
@@ -57,13 +60,14 @@ class P2F_Client:
                         run_token_request = run_token_request[-1]
                     if run_token_request in (None, "1"):
                         self.request_token()
-        if self.auth_token_expiration < datetime.now(tz=ZoneInfo("UTC")):
-            if self.auth_email is not None:
-                run_token_request = input("Your token is expired, would you like to request a new token now? (1) yes 2 no")
-                while run_token_request[-1] in [" ", "\n"]:
-                    run_token_request = run_token_request[-1]
-                if run_token_request in (None, "1"):
-                    self.request_token()
+        if self.auth_token_expiration is not None:
+            if self.auth_token_expiration < datetime.now(tz=ZoneInfo("UTC")):
+                if self.auth_email is not None:
+                    run_token_request = input("Your token is expired, would you like to request a new token now? (1) yes 2 no")
+                    while run_token_request[-1] in [" ", "\n"]:
+                        run_token_request = run_token_request[-1]
+                    if run_token_request in (None, "1"):
+                        self.request_token()
         self.child_class_loading()
         
     def probe_api_endpoint(self):
@@ -71,13 +75,13 @@ class P2F_Client:
             r = requests.get(self.base_url / "version")
             if r.ok:
                 api_meta = API_Metadata(**r.json())
-                if api_meta.pyclient_minimum_version.major > self.version[0]:
+                if api_meta.pyclient_minimum_version.major > self.version.major:
                     raise EnvironmentError("Current p2f-client-py version does not match API server's minimum supported version. Update your p2f-client-py library.")
                 else:
-                    if api_meta.pyclient_minimum_version.minor > self.version[1]:
+                    if api_meta.pyclient_minimum_version.minor > self.version.minor:
                         raise RuntimeWarning("The minor version of this library, p2f-client-py, is less than the minimum supported minor version of the API server. You may experience errors when interacting with the API through the client. Please update p2f-client-py")
                     else:
-                        if api_meta.pyclient_minimum_version.patch > self.version[2]:
+                        if api_meta.pyclient_minimum_version.patch > self.version.patch:
                             raise RuntimeWarning("The patch version of this library, p2f-client-py, is less than the minimum supported patch version of the API server. You should not, but may experience errors when interacting with the API through the client. Please update p2f-client-py")
     def child_class_loading(self):
         # Separated this out so we can reload it later. 
@@ -111,6 +115,7 @@ class P2F_Client:
         #    so that our expiration time is just before actual expiration. 
         self.auth_token_expiration = datetime.now(tz=ZoneInfo("UTC")) + timedelta(hours=24)
         self.dotp2f_update_config_parameter("TOKEN_EXPIRATION", self.auth_token_expiration.strftime(self.dotp2f_datetime_template))
+        self.dotp2f_update_config_parameter("TOKEN", "")
         if health_check(self.base_url):
             r = requests.post(self.token_request_url, 
                               data=token_request_model.model_dump_json(exclude_unset=True),
@@ -143,9 +148,9 @@ class P2F_Client:
         self.dotp2f_dir = home / ".p2f"
         self.dotp2f_config = self.dotp2f_dir / "CONFIG"
     def dotp2f_folder_create(self):
-        if self.dotp2f_dir.exists == False:
+        if self.dotp2f_dir.exists() == False:
             mkdir(self.dotp2f_dir)
-        if self.dotp2f_config.exists == False:
+        if self.dotp2f_config.exists() == False:
             with open(self.dotp2f_config, "w") as config_file:
                 config_file.write("EMAIL = ''\n")
                 config_file.write("TOKEN = ''\n")
