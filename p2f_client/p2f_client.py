@@ -27,7 +27,7 @@ class P2F_Client:
                  port: int=443, 
                  https: bool=True,
                  email: Optional[str]=None):
-        self.version = Semantic_Version(major=0, minor=0, patch=14)
+        self.version = Semantic_Version(major=0, minor=0, patch=15)
         self.hostname = hostname
         self.port = port
         if https:
