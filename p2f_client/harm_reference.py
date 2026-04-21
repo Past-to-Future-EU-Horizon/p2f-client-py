@@ -77,7 +77,7 @@ class harm_reference:
         :param record_hash: record_hash from the API
         :type record_hash: str
         """
-        assign_url = self.hr_url
+        assign_url = self.hr_url / "assign"
         assign_url.args["reference_id"] = reference_id
         assign_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
@@ -93,7 +93,7 @@ class harm_reference:
         :param record_hash: Record hash from the API
         :type record_hash: str
         """
-        assign_url = self.hr_url
+        assign_url = self.hr_url / "remove"
         assign_url.args["reference_id"] = reference_id
         assign_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
