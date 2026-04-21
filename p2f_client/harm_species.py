@@ -15,7 +15,7 @@ class harm_species:
         self.base_url = p2fclient.base_url
         self.prefix = "harm-data-species/"
         self.hds_url = self.base_url / self.prefix
-        self.harmonized_species_queue = []
+        self.data_model = HARM_Data_Species
     def upload_harm_species(self, new_species: HARM_Data_Species) -> HARM_Data_Species:
         """Upload a HARM_Data_Species directly to the API
 

@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### v0.0.18 - 2026-04-21
+
+* Elaborate more the README.md
+* Add .data_model to client libraries for easy p2f-pydantic model access
+
 ### v0.0.17 - 2026-04-21
 
 * Add link_git functionality to link a git repository to a dataset

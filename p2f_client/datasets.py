@@ -17,7 +17,7 @@ class datasets:
         self.base_url = p2fclient.base_url
         self.prefix = "datasets/"
         self.dataset_url = self.base_url / self.prefix
-        self.upload_queue = []
+        self.data_model = Datasets
     def upload_dataset(self, dataset: Datasets):
         """Upload a dataset directly to the API. 
 

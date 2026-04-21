@@ -15,6 +15,7 @@ class git:
         self.base_url = p2fclient.base_url
         self.prefix = "git/"
         self.git_url = self.base_url / self.prefix
+        self.data_model = Git_Repository
     def upload_git(self, new_git_repo: Git_Repository) -> Git_Repository:
         """Upload a git repository to the P2F API
 

@@ -16,7 +16,7 @@ class harm_reference:
         self.base_url = p2fclient.base_url
         self.prefix = "harm-reference/"
         self.hr_url = self.base_url / self.prefix
-        self.harmonized_reference_queue = []
+        self.data_model = HARM_Reference
     def upload_harm_reference(self, new_reference: HARM_Reference) -> HARM_Reference:
         """Upload a reference to the API directly
 

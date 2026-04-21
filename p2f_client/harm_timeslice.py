@@ -15,7 +15,7 @@ class harm_timeslice:
         self.base_url = p2fclient.base_url
         self.prefix = "harm-timeslice/"
         self.ht_url = self.base_url / self.prefix
-        self.harmonized_timeslice_queue = []
+        self.data_model = HARM_Timeslice
     def upload_timeslice(self, new_timeslice: HARM_Timeslice) -> HARM_Timeslice:
         """Upload a timeslice directly to the P2F API. 
 

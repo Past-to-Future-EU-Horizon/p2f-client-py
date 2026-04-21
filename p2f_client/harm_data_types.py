@@ -17,7 +17,7 @@ class harm_data_type:
         self.base_url = p2fclient.base_url
         self.prefix = "harm-data-types/"
         self.hdt_url = self.base_url / self.prefix
-        self.harm_data_types_queue = []
+        self.data_model = HARM_Data_Type
     def upload_data_type(self, new_data_type: HARM_Data_Type) -> HARM_Data_Type:
         """Upload a HARM_Data_Type directly to the API. 
 

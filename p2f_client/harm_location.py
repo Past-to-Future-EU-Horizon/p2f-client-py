@@ -16,7 +16,8 @@ class harm_location:
         self.base_url = p2fclient.base_url
         self.prefix = "harm-data-locations/"
         self.hdl_url = self.base_url / self.prefix
-        self.harmonized_location_queue = []
+        self.data_model = HARM_Location
+        self.bounding_box = HARM_Bounding_Box
     def upload_harm_location(self, new_location: HARM_Location) -> HARM_Location:
         """Upload a location to the P2F API
 

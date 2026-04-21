@@ -19,7 +19,7 @@ class harm_data_records:
         self.base_url = p2fclient.base_url
         self.prefix = "harm-data-records/"
         self.hdr_url = self.base_url / self.prefix
-        self.harm_data_records_queue = []
+        self.data_model = HARM_Data_Record
     def upload_data_record(self, data_record: HARM_Data_Record):
         """Upload a HARM_Data_Record directly to the API
 

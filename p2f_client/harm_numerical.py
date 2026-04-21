@@ -20,7 +20,7 @@ class harm_numerical:
         self.base_url = p2fclient.base_url
         self.prefix = "harm-numerical/"
         self.hdn_url = self.base_url / self.prefix
-        self.harmonized_numerical_records_queue = []
+        self.data_model = Insert_HARM_Numerical
     def upload_harm_numerical(self, new_record: Insert_HARM_Numerical):
         """Upload a harm numerical object directly to the API
 
