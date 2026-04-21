@@ -93,9 +93,9 @@ class harm_reference:
         :param record_hash: Record hash from the API
         :type record_hash: str
         """
-        assign_url = self.hr_url / "remove"
-        assign_url.args["reference_id"] = reference_id
-        assign_url.args["record_hash"] = record_hash
+        remove_url = self.hr_url / "remove"
+        remove_url.args["reference_id"] = reference_id
+        remove_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
-            r = requests.delete(assign_url, data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.delete(remove_url, data=self.p2fclient.json_serialize_with_auth(),
                             headers={"Content-Type": "application/json"})

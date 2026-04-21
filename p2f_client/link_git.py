@@ -92,10 +92,10 @@ class git:
         :param dataset_id: dataset id from API
         :type dataset_id: str
         """
-        assign_url = self.git_url / "remove"
-        assign_url.args["git_repo_id"] = git_repo_id
-        assign_url.args["dataset_id"] = dataset_id
+        remove_url = self.git_url / "remove"
+        remove_url.args["git_repo_id"] = git_repo_id
+        remove_url.args["dataset_id"] = dataset_id
         if health_check(self.base_url):
-            r = requests.post(assign_url, 
+            r = requests.post(remove_url, 
                               data=self.p2fclient.json_serialize_with_auth(), 
                               headers={"Content-Type": "application/json"})
