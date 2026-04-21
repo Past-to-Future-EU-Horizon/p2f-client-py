@@ -104,3 +104,17 @@ class harm_species:
         if health_check(self.base_url):
             r = requests.post(assign_url, data=self.p2fclient.json_serialize_with_auth(),
                             headers={"Content-Type": "application/json"})
+    def remove_species_from_record(self, species_identifier: UUID, record_hash: str):
+        """Remove a species assigned to a data record using the record hash. 
+
+        :param species_identifier: species identifier
+        :type species_identifier: UUID
+        :param record_hash: record hash of the data record
+        :type record_hash: str
+        """
+        remove_url = self.hds_url / "assign"
+        remove_url.args["species_id"] = species_identifier
+        remove_url.args["record_hash"] = record_hash
+        if health_check(self.base_url):
+            r = requests.post(remove_url, data=self.p2fclient.json_serialize_with_auth(),
+                            headers={"Content-Type": "application/json"})
