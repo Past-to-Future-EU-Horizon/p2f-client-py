@@ -109,3 +109,19 @@ class harm_location:
         if health_check(self.base_url):
             r = requests.post(assign_url, data=self.p2fclient.json_serialize_with_auth(),
                             headers={"Content-Type": "application/json"})
+    def assign_location_to_record(self, location_identifier: UUID, record_hash: str):
+        """Remove a location assigned to a record hash
+
+        :param location_identifier: location identifier from the API
+        :type location_identifier: UUID
+        :param record_hash: Record hash
+        :type record_hash: str
+        """
+        # params = {"location_identifier": str(location_identifier),
+        #           "record_hash": record_hash}
+        remove_url = self.hdl_url / "assign"
+        remove_url.args["location_identifier"] = str(location_identifier)
+        remove_url.args["record_hash"] = record_hash
+        if health_check(self.base_url):
+            r = requests.post(remove_url, data=self.p2fclient.json_serialize_with_auth(),
+                            headers={"Content-Type": "application/json"})
