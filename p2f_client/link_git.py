@@ -77,7 +77,7 @@ class git:
         :param dataset_id: dataset id from API
         :type dataset_id: str
         """
-        assign_url = self.git_url / "assign/"
+        assign_url = self.git_url / "assign"
         assign_url.args["git_repo_id"] = git_repo_id
         assign_url.args["dataset_id"] = dataset_id
         if health_check(self.base_url):
@@ -92,7 +92,7 @@ class git:
         :param dataset_id: dataset id from API
         :type dataset_id: str
         """
-        assign_url = self.git_url / "remove/"
+        assign_url = self.git_url / "remove"
         assign_url.args["git_repo_id"] = git_repo_id
         assign_url.args["dataset_id"] = dataset_id
         if health_check(self.base_url):
