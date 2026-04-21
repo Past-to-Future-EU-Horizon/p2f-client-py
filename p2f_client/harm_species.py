@@ -112,7 +112,7 @@ class harm_species:
         :param record_hash: record hash of the data record
         :type record_hash: str
         """
-        remove_url = self.hds_url / "assign"
+        remove_url = self.hds_url / "remove"
         remove_url.args["species_id"] = species_identifier
         remove_url.args["record_hash"] = record_hash
         if health_check(self.base_url):

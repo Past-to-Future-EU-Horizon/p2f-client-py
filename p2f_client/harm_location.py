@@ -109,7 +109,7 @@ class harm_location:
         if health_check(self.base_url):
             r = requests.post(assign_url, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
-    def assign_location_to_record(self, location_identifier: UUID, record_hash: str):
+    def remove_location_from_record(self, location_identifier: UUID, record_hash: str):
         """Remove a location assigned to a record hash
 
         :param location_identifier: location identifier from the API
@@ -119,7 +119,7 @@ class harm_location:
         """
         # params = {"location_identifier": str(location_identifier),
         #           "record_hash": record_hash}
-        remove_url = self.hdl_url / "assign"
+        remove_url = self.hdl_url / "remove"
         remove_url.args["location_identifier"] = str(location_identifier)
         remove_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
