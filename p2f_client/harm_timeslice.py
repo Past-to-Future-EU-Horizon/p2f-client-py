@@ -26,7 +26,7 @@ class harm_timeslice:
         """
         if health_check(self.base_url):
             r = requests.post(self.ht_url, 
-                              data=self.p2fclient.json_serialize_with_auth("new_harm_timeslice", new_timeslice.model_dump_json(exclude_unset=True)),
+                              data=self.p2fclient.jswa("new_harm_timeslice", new_timeslice.model_dump_json(exclude_unset=True)),
                             headers={"Content-Type": "application/json"})
             return HARM_Timeslice(**r.json())
     def list_timeslices(self,
@@ -50,7 +50,7 @@ class harm_timeslice:
         params = {x: y for x, y in params.items() if y != None}
         if health_check(self.base_url):
             r = requests.get(self.ht_url, 
-                            params=params, data=self.p2fclient.json_serialize_with_auth(),
+                            params=params, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
             return [HARM_Timeslice(**x) for x in r.json()]
     def get_timeslice(self, 
@@ -63,7 +63,7 @@ class harm_timeslice:
         :rtype: p2f_pydantic.harm_timeslices.HARM_Timeslice
         """
         if health_check(self.base_url):
-            r = requests.get(self.ht_url / timeslice_id, data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.get(self.ht_url / timeslice_id, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
             return HARM_Timeslice(**r.json())
     def delete_timeslice(self, 
@@ -74,7 +74,7 @@ class harm_timeslice:
         :type timeslice_id: UUID
         """
         if health_check(self.base_url):
-            r = requests.delete(self.ht_url / timeslice_id, data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.delete(self.ht_url / timeslice_id, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
     def assign_timeslice(self, 
                          timeslice_id: UUID, 
@@ -90,7 +90,7 @@ class harm_timeslice:
         assign_url.args["timeslice_id"] = timeslice_id
         assign_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
-            r = requests.post(assign_url, data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.post(assign_url, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
     def remove_timeslice(self, 
                          timeslice_id: UUID, 
@@ -106,5 +106,5 @@ class harm_timeslice:
         remove_url.args["timeslice_id"] = timeslice_id
         remove_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
-            r = requests.delete(remove_url, data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.delete(remove_url, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})

@@ -28,7 +28,7 @@ class harm_data_type:
         """
         if health_check(self.base_url):
             r = requests.post(self.hdt_url, 
-                              data=self.p2fclient.json_serialize_with_auth("new_harm_data_type", new_data_type.model_dump_json(exclude_unset=True)),
+                              data=self.p2fclient.jswa("new_harm_data_type", new_data_type.model_dump_json(exclude_unset=True)),
                             headers={"Content-Type": "application/json"})
             return HARM_Data_Type(**r.json())
     def list_data_types(self, 
@@ -57,7 +57,7 @@ class harm_data_type:
         if health_check(self.base_url):
             r = requests.get(self.hdt_url,
                             params=params, 
-                            data=self.p2fclient.json_serialize_with_auth(),
+                            data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
             return [HARM_Data_Type(**x) for x in r.json()]
     def get_data_type(self, datatype_id: UUID) -> HARM_Data_Type:
@@ -70,7 +70,7 @@ class harm_data_type:
         """
         if health_check(self.base_url):
             r = requests.get(self.hdt_url / datatype_id, 
-                             data=self.p2fclient.json_serialize_with_auth(),
+                             data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
             return HARM_Data_Type(**r.json())
     def delete_data_type(self, datatype_id: UUID):
@@ -81,5 +81,5 @@ class harm_data_type:
         """
         if health_check(self.base_url):
             r = requests.delete(self.hdt_url / datatype_id, 
-                                data=self.p2fclient.json_serialize_with_auth(),
+                                data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})

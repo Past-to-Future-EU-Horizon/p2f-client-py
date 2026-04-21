@@ -25,7 +25,7 @@ class git:
         """
         if health_check(self.base_url):
             r = requests.post(self.git_url, 
-                              data=self.p2fclient.json_serialize_with_auth("new_git_repo", new_git_repo.model_dump_json(exclude_unset=True)),
+                              data=self.p2fclient.jswa("new_git_repo", new_git_repo.model_dump_json(exclude_unset=True)),
                               headers={"Content-Type": "application/json"})
             if r.ok:
                 return Git_Repository(**r.json())
@@ -37,7 +37,7 @@ class git:
         """
         if health_check(self.base_url):
             r = requests.get(self.git_url, 
-                             data=self.p2fclient.json_serialize_with_auth(),
+                             data=self.p2fclient.jswa(),
                              headers={"Content-Type": "application/json"})
             if r.ok:
                 return [Git_Repository(**x) for x in r.json()]
@@ -53,7 +53,7 @@ class git:
         """
         if health_check(self.base_url):
             r = requests.get(self.git_url, 
-                             data=self.p2fclient.json_serialize_with_auth(), 
+                             data=self.p2fclient.jswa(), 
                              params={"git_repo_id": git_repo_id}, 
                              headers={"Content-Type": "application/json"})
             if r.ok:
@@ -66,7 +66,7 @@ class git:
         """ 
         if health_check(self.base_url):
             r = requests.delete(self.git_url, 
-                                data=self.p2fclient.json_serialize_with_auth(), 
+                                data=self.p2fclient.jswa(), 
                                 params={"git_repo_id": git_repo_id},
                                 headers={"Content-Type": "application/json"})
     def assign_git_repository(self, git_repo_id: str, dataset_id: str):
@@ -82,7 +82,7 @@ class git:
         assign_url.args["dataset_id"] = dataset_id
         if health_check(self.base_url):
             r = requests.post(assign_url, 
-                              data=self.p2fclient.json_serialize_with_auth(), 
+                              data=self.p2fclient.jswa(), 
                               headers={"Content-Type": "application/json"})
     def remove_git_repository(self, git_repo_id: str, dataset_id: str):
         """Remove a git repository assigned to a dataset by git_repo_id and dataset_id
@@ -97,5 +97,5 @@ class git:
         remove_url.args["dataset_id"] = dataset_id
         if health_check(self.base_url):
             r = requests.post(remove_url, 
-                              data=self.p2fclient.json_serialize_with_auth(), 
+                              data=self.p2fclient.jswa(), 
                               headers={"Content-Type": "application/json"})

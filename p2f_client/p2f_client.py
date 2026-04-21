@@ -40,7 +40,7 @@ class P2F_Client:
         :param email: email address of the client that will interact with the API, defaults to None
         :type email: Optional[str], optional
         """
-        self.version = Semantic_Version(major=0, minor=0, patch=16)
+        self.version = Semantic_Version(major=0, minor=0, patch=17)
         self.hostname = hostname
         self.port = port
         if https:
@@ -163,9 +163,9 @@ class P2F_Client:
             self.child_class_loading()
         else:
             print("An irregular value was received, TOKEN WAS NOT LOADED FROM FILE. ")
-    def json_serialize_with_auth(self, 
-                                 label: Optional[str]=None, 
-                                 JSON_str: Optional[str]=None):
+    def jswa(self, 
+             label: Optional[str]=None, 
+             JSON_str: Optional[str]=None):
         """Utility function that will run with all API calls to authenticate to the API"""
         if label is not None:
             return f"""{{"auth":{self.temp_account.model_dump_json(exclude_unset=True)},"{label}":{JSON_str}}}"""

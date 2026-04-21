@@ -30,7 +30,7 @@ class harm_data_records:
         """
         if health_check(self.base_url):
             r = requests.post(self.hdr_url,
-                            data=self.p2fclient.json_serialize_with_auth("new_data_record", data_record.model_dump_json(exclude_unset=True)),
+                            data=self.p2fclient.jswa("new_data_record", data_record.model_dump_json(exclude_unset=True)),
                             headers={"Content-Type": "application/json"})
             return HARM_Data_Record(**r.json())
     def list_remote_records(self, 
@@ -50,7 +50,7 @@ class harm_data_records:
         params = {x:y for x, y in params.items() if y != None}
         if health_check(self.base_url):
             r = requests.get(self.hdr_url,
-                            params=params, data=self.p2fclient.json_serialize_with_auth(),
+                            params=params, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
             return [HARM_Data_Record(**x) for x in r.json()]
     def get_remote_record(self, record_hash: str):
@@ -62,7 +62,7 @@ class harm_data_records:
         :rtype: p2f-pydantic.harm_data_record.HARM_Data_Record
         """
         if health_check(self.base_url):
-            r = requests.get(self.hdr_url / record_hash, data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.get(self.hdr_url / record_hash, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
             return HARM_Data_Record(**r.json())
     def delete_remote_dataset(self, record_hash: str):
@@ -72,7 +72,7 @@ class harm_data_records:
         :type record_hash: str
         """
         if health_check(self.base_url):
-            r = requests.delete(self.hdr_url / record_hash, data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.delete(self.hdr_url / record_hash, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
     def calculate_hash(self, dataset_id: str, row_number: int, debugging=False):
         """Utility function for calculating a repeatable hash for the API

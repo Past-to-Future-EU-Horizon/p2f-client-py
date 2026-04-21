@@ -28,7 +28,7 @@ class datasets:
         """
         if health_check(self.base_url):
             r = requests.post(self.dataset_url,
-                            data=self.p2fclient.json_serialize_with_auth("dataset", dataset.model_dump_json(exclude_unset=True)),
+                            data=self.p2fclient.jswa("dataset", dataset.model_dump_json(exclude_unset=True)),
                             headers={"Content-Type": "application/json"})
             return Datasets(**r.json())
     def list_remote_datasets(self, 
@@ -59,7 +59,7 @@ class datasets:
             list_url.args["doi"] = doi
             # data["doi"] = doi
         if health_check(self.base_url):
-            r = requests.get(list_url, data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.get(list_url, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
             # self.datasets = [Datasets(**x) for x in r.json()]
             return [Datasets(**x) for x in r.json()]
@@ -73,7 +73,7 @@ class datasets:
         """
         get_url = self.dataset_url / str(dataset_id)
         if health_check(self.base_url):
-            r = requests.get(get_url, data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.get(get_url, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
             return Datasets(**r.json())
     def delete_remote_dataset(self, dataset_id: UUID | str):
@@ -86,5 +86,5 @@ class datasets:
         """
         delete_url = self.dataset_url / str(dataset_id)
         if health_check(self.base_url):
-            r = requests.delete(delete_url, data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.delete(delete_url, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})

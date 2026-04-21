@@ -27,7 +27,7 @@ class harm_location:
         """
         if health_check(self.base_url):
             r = requests.post(self.hdl_url, 
-                              data=self.p2fclient.json_serialize_with_auth("new_location", new_location.model_dump_json(exclude_unset=True)),
+                              data=self.p2fclient.jswa("new_location", new_location.model_dump_json(exclude_unset=True)),
                             headers={"Content-Type": "application/json"})
             return HARM_Location(**r.json())
     def list_harm_locations(self,
@@ -69,7 +69,7 @@ class harm_location:
         params = {x: y for x, y in params.items() if y != None}
         if health_check(self.base_url):
             r = requests.get(self.hdl_url,
-                            params=params, data=self.p2fclient.json_serialize_with_auth(),
+                            params=params, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
             return [HARM_Location(**x) for x in r.json()]
     def get_harm_location(self, location_identifier: UUID) -> HARM_Location:
@@ -81,7 +81,7 @@ class harm_location:
         :rtype: p2f_pydantic.harm_data_metadata.HARM_Location
         """
         if health_check(self.base_url):
-            r = requests.get(self.hdl_url/str(location_identifier), data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.get(self.hdl_url/str(location_identifier), data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
             return HARM_Location(**r.json())
     def delete_harm_location(self, location_identifier: UUID):
@@ -91,7 +91,7 @@ class harm_location:
         :type location_identifier: UUID
         """
         if health_check(self.base_url):
-            r = requests.delete(self.hdl_url/str(location_identifier), data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.delete(self.hdl_url/str(location_identifier), data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
     def assign_location_to_record(self, location_identifier: UUID, record_hash: str):
         """Assign a location to a record hash
@@ -107,7 +107,7 @@ class harm_location:
         assign_url.args["location_identifier"] = str(location_identifier)
         assign_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
-            r = requests.post(assign_url, data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.post(assign_url, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
     def assign_location_to_record(self, location_identifier: UUID, record_hash: str):
         """Remove a location assigned to a record hash
@@ -123,5 +123,5 @@ class harm_location:
         remove_url.args["location_identifier"] = str(location_identifier)
         remove_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
-            r = requests.post(remove_url, data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.post(remove_url, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})

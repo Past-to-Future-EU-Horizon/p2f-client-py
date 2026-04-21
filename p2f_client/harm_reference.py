@@ -26,7 +26,7 @@ class harm_reference:
         :rtype: p2f_pydantic.harm_reference.HARM_Reference
         """
         if health_check(self.base_url):
-            r = requests.post(self.hr_url, data=self.p2fclient.json_serialize_with_auth("new_reference", new_reference.model_dump_json(exclude_unset=True)),
+            r = requests.post(self.hr_url, data=self.p2fclient.jswa("new_reference", new_reference.model_dump_json(exclude_unset=True)),
                             headers={"Content-Type": "application/json"})
             if r.ok:
                 return (HARM_Reference(**r.json()))
@@ -39,7 +39,7 @@ class harm_reference:
         :rtype: List[p2f_pydantic.harm_reference.HARM_Reference]
         """
         if health_check(self.base_url):
-            r = requests.get(self.hr_url, data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.get(self.hr_url, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
             if r.ok:
                 return [HARM_Reference(**x) for x in r.json()]
@@ -54,7 +54,7 @@ class harm_reference:
         :rtype: p2f_pydantic.harm_reference.HARM_Reference
         """
         if health_check(self.base_url):
-            r = requests.get(self.hr_url / reference_id, data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.get(self.hr_url / reference_id, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
             if r.ok:
                 return HARM_Reference(**r.json())
@@ -65,7 +65,7 @@ class harm_reference:
         :type reference_id: UUID
         """
         if health_check(self.base_url):
-            r = requests.delete(self, reference_id, data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.delete(self, reference_id, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
     def assign_harm_reference(self, 
                               reference_id: UUID, 
@@ -81,7 +81,7 @@ class harm_reference:
         assign_url.args["reference_id"] = reference_id
         assign_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
-            r = requests.post(assign_url, data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.post(assign_url, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
     def remove_harm_reference(self, 
                               reference_id: UUID, 
@@ -97,5 +97,5 @@ class harm_reference:
         remove_url.args["reference_id"] = reference_id
         remove_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
-            r = requests.delete(remove_url, data=self.p2fclient.json_serialize_with_auth(),
+            r = requests.delete(remove_url, data=self.p2fclient.jswa(),
                             headers={"Content-Type": "application/json"})
