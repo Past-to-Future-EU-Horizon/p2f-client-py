@@ -9,25 +9,23 @@ from uuid import UUID
 from typing import Optional, List
 
 class datasets:
+    """Class to host the functions of interacting with the P2F API, and 
+        uploading, retrieving, and deleting Datasets. 
+    """
     def __init__(self, p2fclient):
         self.p2fclient = p2fclient
         self.base_url = p2fclient.base_url
         self.prefix = "datasets/"
         self.dataset_url = self.base_url / self.prefix
         self.upload_queue = []
-    def add_dataset(self, dataset: Datasets):
-        self.upload_queue.append(dataset)
-    def upload_datasets(self):
-        uploaded_datasets = []
-        if health_check(self.base_url):
-            for dataset in self.upload_queue:
-                r = requests.post(self.dataset_url,
-                                data=self.p2fclient.json_serialize_with_auth("dataset", dataset.model_dump_json(exclude_unset=True)),
-                                headers={"Content-Type": "application/json"})
-                uploaded_datasets.append(Datasets(**r.json()))
-            # self.uploaded_datasets = uploaded_datasets
-            return uploaded_datasets
     def upload_dataset(self, dataset: Datasets):
+        """Upload a dataset directly to the API. 
+
+        :param dataset: Dataset to be uploaded to the API
+        :type dataset: p2f_pydantic.datasets.Datasets
+        :return: Dataset as ingested by the API
+        :rtype: p2f_pydantic.datasets.Datasets
+        """
         if health_check(self.base_url):
             r = requests.post(self.dataset_url,
                             data=self.p2fclient.json_serialize_with_auth("dataset", dataset.model_dump_json(exclude_unset=True)),
@@ -37,6 +35,18 @@ class datasets:
                              is_new_p2f: Optional[bool]=None,
                              is_sub_dataset: Optional[bool]=None,
                              doi: Optional[str]=None) -> List[Datasets]:
+        """List datasets from the API
+
+        :param is_new_p2f: If the dataset is original to the P2F project (True) or 
+            was created by a previous project (False), defaults to None
+        :type is_new_p2f: Optional[bool], optional
+        :param is_sub_dataset: _description_, defaults to None
+        :type is_sub_dataset: Optional[bool], optional
+        :param doi: _description_, defaults to None
+        :type doi: Optional[str], optional
+        :return: _description_
+        :rtype: List[Datasets]
+        """
         list_url = self.dataset_url
         # data = {}
         if is_new_p2f is not None:
@@ -53,13 +63,27 @@ class datasets:
                             headers={"Content-Type": "application/json"})
             # self.datasets = [Datasets(**x) for x in r.json()]
             return [Datasets(**x) for x in r.json()]
-    def get_remote_dataset(self, dataset_id):
+    def get_remote_dataset(self, dataset_id: UUID | str):
+        """Get a single dataset record by the dataset ID
+        
+        Parameters
+        ----------
+        dataset_id : UUID or str
+            Dataset ID of a single dataset to retrieve
+        """
         get_url = self.dataset_url / str(dataset_id)
         if health_check(self.base_url):
             r = requests.get(get_url, data=self.p2fclient.json_serialize_with_auth(),
                             headers={"Content-Type": "application/json"})
             return Datasets(**r.json())
-    def delete_remote_dataset(self, dataset_id):
+    def delete_remote_dataset(self, dataset_id: UUID | str):
+        """Delete a single dataset record by the dataset ID
+        
+        Parameters
+        ----------
+        dataset_id : UUID or str
+            Dataset ID of a single dataset to delete
+        """
         delete_url = self.dataset_url / str(dataset_id)
         if health_check(self.base_url):
             r = requests.delete(delete_url, data=self.p2fclient.json_serialize_with_auth(),

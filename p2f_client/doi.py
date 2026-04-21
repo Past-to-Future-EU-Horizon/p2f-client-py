@@ -1,6 +1,7 @@
 import furl
 
 class doi:
+    """Utility class for interacting with a DOI in a URL or 10.prefix/suffix format."""
     def __init__(self, doi_input: str):
         if doi_input.startswith("10"):
             doi_split = doi_input.split("/")

@@ -7,6 +7,7 @@ from furl import furl
 ###   endpoint first, opening the connection to the API. 
 
 def health_probe(base_url):
+    """An untested decorator for performing a health check before making an API call"""
     def health_probe_func_level(func):
         base_url = furl(base_url)
         prefix = "health-check"
@@ -23,6 +24,10 @@ def health_probe(base_url):
     return health_probe_func_level
 
 def health_check(base_url: furl):
+    """A basic function that is called to make sure the API is running. This is also
+        important due to an issue with v0.0 API and the Ingress controller not sending
+        data from the client to the API without an open connection. Using this function
+        will open a connection that can be used for POST and PUT requests."""
     prefix = "health-check"
     healthcheck_url = base_url / f"{prefix}/"
     r = requests.get(healthcheck_url)

@@ -22,12 +22,25 @@ from os import mkdir
 
 
 class P2F_Client:
+    """Base P2F Client class that initializes all interactions with the P2F API
+    """
     def __init__(self, 
                  hostname: str, 
                  port: int=443, 
                  https: bool=True,
                  email: Optional[str]=None):
-        self.version = Semantic_Version(major=0, minor=0, patch=15)
+        """Initializer for the P2F Client library
+
+        :param hostname: string representing the hostname of the API
+        :type hostname: str
+        :param port: integer of the API port, defaults to 443
+        :type port: int, optional
+        :param https: boolean of whether to use HTTPS (True) or HTTP (False), defaults to True
+        :type https: bool, optional
+        :param email: email address of the client that will interact with the API, defaults to None
+        :type email: Optional[str], optional
+        """
+        self.version = Semantic_Version(major=0, minor=0, patch=16)
         self.hostname = hostname
         self.port = port
         if https:
@@ -71,6 +84,15 @@ class P2F_Client:
         self.child_class_loading()
         
     def probe_api_endpoint(self):
+        """Function to get metadata about the configured API.
+
+        :raises EnvironmentError: If the client library is a major version behind the API's minimum 
+            supported major version. 
+        :raises RuntimeWarning: If the client library is a minor version behind the API's minimum 
+            upported minor version. 
+        :raises RuntimeWarning: If the client library is a patch version behind the API's minimum 
+            supported patch version. 
+        """
         if health_check(self.base_url):
             r = requests.get(self.base_url / "version")
             if r.ok:
@@ -84,6 +106,7 @@ class P2F_Client:
                         if api_meta.pyclient_minimum_version.patch > self.version.patch:
                             raise RuntimeWarning("The patch version of this library, p2f-client-py, is less than the minimum supported patch version of the API server. You should not, but may experience errors when interacting with the API through the client. Please update p2f-client-py")
     def child_class_loading(self):
+        """A function to reload the child data classes for interacting with specific API components."""
         # Separated this out so we can reload it later. 
         self.datasets = datasets(self)
         self.harm_data_records = harm_data_records(self)
@@ -94,6 +117,10 @@ class P2F_Client:
         self.harm_timeslice = harm_timeslice(self)
         self.harm_reference = harm_reference(self)
     def request_token(self):
+        """Sends a requst to the API to request an API token through email. 
+            If the client library does not have an email address currently configured
+                it will request an email address from the user. 
+            An email address is required for all practical uses of the API. """
         self.token_url = self.base_url / "token"
         self.token_request_url = self.token_url / "request"
         if self.auth_email is None:
@@ -122,6 +149,7 @@ class P2F_Client:
                               headers={"Content-Type": "application/json"})
             print(r.json())
     def set_token(self):
+        """Reload the child classes once the token has been placed in the config file."""
         print(f"Please open the file {self.dotp2f_config} and paste your token from email into the TOKEN line of the file")
         token_confirm = input("When you have updated and saved the file, please enter a one (1) here: ")
         while token_confirm[0] in [" "]:
@@ -138,16 +166,19 @@ class P2F_Client:
     def json_serialize_with_auth(self, 
                                  label: Optional[str]=None, 
                                  JSON_str: Optional[str]=None):
+        """Utility function that will run with all API calls to authenticate to the API"""
         if label is not None:
             return f"""{{"auth":{self.temp_account.model_dump_json(exclude_unset=True)},"{label}":{JSON_str}}}"""
         if label is None:
             return self.temp_account.model_dump_json(exclude_unset=True)
     def dotp2f_init(self):
+        """Utility function to initialize the paths for the .p2f config file and folder"""
         self.dotp2f_datetime_template = "%Y-%m-%dT%H-%M-%SZ"
         home = pathlib.Path.home()
         self.dotp2f_dir = home / ".p2f"
         self.dotp2f_config = self.dotp2f_dir / "CONFIG"
     def dotp2f_folder_create(self):
+        """Utility function to create .p2f folder and CONFIG file if they do not exist."""
         if self.dotp2f_dir.exists() == False:
             mkdir(self.dotp2f_dir)
         if self.dotp2f_config.exists() == False:
@@ -156,6 +187,7 @@ class P2F_Client:
                 config_file.write("TOKEN = ''\n")
                 config_file.write("TOKEN_EXPIRATION = ''\n")
     def dotp2f_update_config_parameter(self, parameter: str, new_value: str):
+        """Utility function to update a parameter in the .p2f/CONFIG file"""
         with open(self.dotp2f_config, "r") as config_read:
             lines = config_read.readlines()
         with open(self.dotp2f_config, "w") as config_write:
@@ -165,6 +197,7 @@ class P2F_Client:
                 else:
                     config_write.write(line)
     def dotp2f_read_config(self):
+        """Utility function to read the parameters from the .p2f/CONFIG file. """
         config = {}
         with open(self.dotp2f_config, "r") as config_read:
             for line in config_read.readlines():

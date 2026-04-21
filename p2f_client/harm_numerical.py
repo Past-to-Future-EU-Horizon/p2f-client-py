@@ -13,24 +13,22 @@ from typing import Optional, List, Union, Literal
 Harm_numerical_union = Union[HARM_Int, HARM_Int_Confidence, HARM_Float, HARM_Float_Confidence]
 
 class harm_numerical:
+    """Client endpoint for interacting with numerical data types in the P2F API
+    """
     def __init__(self, p2fclient):
         self.p2fclient = p2fclient
         self.base_url = p2fclient.base_url
         self.prefix = "harm-numerical/"
         self.hdn_url = self.base_url / self.prefix
         self.harmonized_numerical_records_queue = []
-    def add_harm_numerical(self, new_numerical_record: Insert_HARM_Numerical):
-        self.harmonized_numerical_records_queue.append(new_numerical_record)
-    def upload_harm_numericals(self):
-        inserted_numericals = []
-        if health_check(self.base_url):
-            for nummer in self.harmonized_numerical_records_queue:
-                r = requests.post(self.hdn_url, 
-                                  data=self.p2fclient.json_serialize_with_auth("new_numeric", nummer.model_dump_json(exclude_unset=True)),
-                            headers={"Content-Type": "application/json"})
-                inserted_numericals.append(self.identify_numeric_object(r.json(), nummer.model_dump_json(exclude_unset=True)))
-            return inserted_numericals
     def upload_harm_numerical(self, new_record: Insert_HARM_Numerical):
+        """Upload a harm numerical object directly to the API
+
+        :param new_record: _description_
+        :type new_record: Insert_HARM_Numerical
+        :return: numerical object as processed by the API
+        :rtype: object from p2f_pydantic.harm_data_numerical
+        """
         if health_check(self.base_url):
             r = requests.post(self.hdn_url, data=self.p2fclient.json_serialize_with_auth("new_numeric", new_record.model_dump_json(exclude_unset=True)),
                             headers={"Content-Type": "application/json"})
@@ -42,7 +40,20 @@ class harm_numerical:
                                                         "int_confidence", 
                                                         "int"]]=None, 
                              data_type: Optional[UUID]=None, 
-                             dataset_id: Optional[UUID]=None):
+                             dataset_id: Optional[UUID]=None) -> Return_HARM_Numerical:
+        """Get a list of numerical objects from the P2F API
+
+        :param record_hash: Record hash, defaults to None
+        :type record_hash: Optional[str], optional
+        :param numeric_type: Integer or Floating point number with or without confidence interval, defaults to None
+        :type numeric_type: Optional[Literal[float_confidence, float, int_confidence, int]], optional
+        :param data_type: Data type id, defaults to None
+        :type data_type: Optional[UUID], optional
+        :param dataset_id: dataset_id, defaults to None
+        :type dataset_id: Optional[UUID], optional
+        :return: Return_HARM_Numerical object
+        :rtype: Return_HARM_Numerical
+        """
         params = {
             "record_hash": record_hash,
             "numeric_type": numeric_type,
