@@ -7,6 +7,8 @@ from .harm_location import harm_location
 from .harm_species import harm_species
 from .harm_timeslice import harm_timeslice
 from .harm_reference import harm_reference
+from .harm_age import harm_age
+from .link_git import git
 from .conn import health_check
 from p2f_pydantic.temp_accounts import Temp_Account
 from p2f_pydantic.system import API_Metadata, Semantic_Version
@@ -40,7 +42,7 @@ class P2F_Client:
         :param email: email address of the client that will interact with the API, defaults to None
         :type email: Optional[str], optional
         """
-        self.version = Semantic_Version(major=0, minor=0, patch=18)
+        self.version = Semantic_Version(major=0, minor=0, patch=19)
         self.hostname = hostname
         self.port = port
         if https:
@@ -116,6 +118,8 @@ class P2F_Client:
         self.harm_species = harm_species(self)
         self.harm_timeslice = harm_timeslice(self)
         self.harm_reference = harm_reference(self)
+        self.harm_age = harm_age(self)
+        self.link_git = git(self)
     def request_token(self):
         """Sends a requst to the API to request an API token through email. 
             If the client library does not have an email address currently configured
