@@ -25,6 +25,7 @@ Create a client
 
 On your first usage of the client on a computer the library will create a .p2f folder for storing a configuration of your account. 
 A config file is used because this will prevent tokens from being uploaded to a remote Git repository where they could theoretically be exploited. 
+The variables stored in .p2f/CONFIG are `TOKEN`, `EMAIL`, and `EXPIRATION`.
 
 ## Authentication
 

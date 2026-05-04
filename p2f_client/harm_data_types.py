@@ -28,8 +28,8 @@ class harm_data_type:
         """
         if health_check(self.base_url):
             r = requests.post(self.hdt_url, 
-                              data=self.p2fclient.jswa("new_harm_data_type", new_data_type.model_dump_json(exclude_unset=True)),
-                            headers={"Content-Type": "application/json"})
+                              data=new_data_type.model_dump_json(exclude_unset=True),
+                              headers=self.p2fclient.base_headers)
             return HARM_Data_Type(**r.json())
     def list_data_types(self, 
                         measure: Optional[str]=None,
@@ -57,8 +57,7 @@ class harm_data_type:
         if health_check(self.base_url):
             r = requests.get(self.hdt_url,
                             params=params, 
-                            data=self.p2fclient.jswa(),
-                            headers={"Content-Type": "application/json"})
+                            headers=self.p2fclient.base_headers)
             return [HARM_Data_Type(**x) for x in r.json()]
     def get_data_type(self, datatype_id: UUID) -> HARM_Data_Type:
         """Get an individual data type by the datatype_id
@@ -69,9 +68,8 @@ class harm_data_type:
         :rtype: p2f_pydantic.harm_data_types.HARM_Data_Type
         """
         if health_check(self.base_url):
-            r = requests.get(self.hdt_url / datatype_id, 
-                             data=self.p2fclient.jswa(),
-                            headers={"Content-Type": "application/json"})
+            r = requests.get(self.hdt_url / datatype_id,
+                             headers=self.p2fclient.base_headers)
             return HARM_Data_Type(**r.json())
     def delete_data_type(self, datatype_id: UUID):
         """Delete a datatype from the API endpoint. 
@@ -80,6 +78,5 @@ class harm_data_type:
         :type datatype_id: UUID
         """
         if health_check(self.base_url):
-            r = requests.delete(self.hdt_url / datatype_id, 
-                                data=self.p2fclient.jswa(),
-                            headers={"Content-Type": "application/json"})
+            r = requests.delete(self.hdt_url / datatype_id,
+                                headers=self.p2fclient.base_headers)

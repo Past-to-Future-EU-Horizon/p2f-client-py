@@ -27,7 +27,7 @@ class harm_species:
         if health_check(self.base_url):
             r = requests.post(self.hds_url, 
                               data=self.p2fclient.jswa("new_species", new_species.model_dump_json(exclude_unset=True)),
-                            headers={"Content-Type": "application/json"})
+                            headers=self.p2fclient.base_headers)
             return HARM_Data_Species(**r.json())
     def list_harm_species(self, 
                           tax_domain: Optional[str]=None,
@@ -66,8 +66,8 @@ class harm_species:
         params = {x: y for x, y in params.items() if y != None}
         if health_check(self.base_url):
             r = requests.get(self.hds_url, 
-                            params=params, data=self.p2fclient.jswa(),
-                            headers={"Content-Type": "application/json"})
+                            params=params,
+                            headers=self.p2fclient.base_headers)
             return [HARM_Data_Species(**x) for x in r.json()]
     def get_harm_species(self, species_identifier: UUID) -> HARM_Data_Species:
         """Get an individual harm species based on the API species id
@@ -78,8 +78,8 @@ class harm_species:
         :rtype: p2f_pydantic.harm_data_metadata.HARM_Data_Species
         """
         if health_check(self.base_url):
-            r = requests.get(self.hds_url/species_identifier, data=self.p2fclient.jswa(),
-                            headers={"Content-Type": "application/json"})
+            r = requests.get(self.hds_url/species_identifier,
+                            headers=self.p2fclient.base_headers)
             return HARM_Data_Species(**r.json())
     def delete_harm_species(self, species_identifier: UUID):
         """Delete a species from the P2F API
@@ -88,8 +88,8 @@ class harm_species:
         :type species_identifier: UUID
         """
         if health_check(self.base_url):
-            r = requests.delete(self.hds_url/species_identifier, data=self.p2fclient.jswa(),
-                            headers={"Content-Type": "application/json"})
+            r = requests.delete(self.hds_url/species_identifier,
+                            headers=self.p2fclient.base_headers)
     def assign_species_to_record(self, species_identifier: UUID, record_hash: str):
         """Assign a species to a data record using the record hash. 
 
@@ -102,8 +102,8 @@ class harm_species:
         assign_url.args["species_id"] = species_identifier
         assign_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
-            r = requests.post(assign_url, data=self.p2fclient.jswa(),
-                            headers={"Content-Type": "application/json"})
+            r = requests.post(assign_url,
+                            headers=self.p2fclient.base_headers)
     def remove_species_from_record(self, species_identifier: UUID, record_hash: str):
         """Remove a species assigned to a data record using the record hash. 
 
@@ -116,5 +116,5 @@ class harm_species:
         remove_url.args["species_id"] = species_identifier
         remove_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
-            r = requests.post(remove_url, data=self.p2fclient.jswa(),
-                            headers={"Content-Type": "application/json"})
+            r = requests.post(remove_url,
+                            headers=self.p2fclient.base_headers)

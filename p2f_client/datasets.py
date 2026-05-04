@@ -28,8 +28,8 @@ class datasets:
         """
         if health_check(self.base_url):
             r = requests.post(self.dataset_url,
-                            data=self.p2fclient.jswa("dataset", dataset.model_dump_json(exclude_unset=True)),
-                            headers={"Content-Type": "application/json"})
+                              data=dataset.model_dump_json(exclude_unset=True),
+                              headers=self.p2fclient.base_headers)
             return Datasets(**r.json())
     def list_remote_datasets(self, 
                              is_new_p2f: Optional[bool]=None,
@@ -59,8 +59,8 @@ class datasets:
             list_url.args["doi"] = doi
             # data["doi"] = doi
         if health_check(self.base_url):
-            r = requests.get(list_url, data=self.p2fclient.jswa(),
-                            headers={"Content-Type": "application/json"})
+            r = requests.get(list_url,
+                            headers=self.p2fclient.base_headers)
             # self.datasets = [Datasets(**x) for x in r.json()]
             return [Datasets(**x) for x in r.json()]
     def get_remote_dataset(self, dataset_id: UUID | str):
@@ -73,8 +73,8 @@ class datasets:
         """
         get_url = self.dataset_url / str(dataset_id)
         if health_check(self.base_url):
-            r = requests.get(get_url, data=self.p2fclient.jswa(),
-                            headers={"Content-Type": "application/json"})
+            r = requests.get(get_url,
+                            headers=self.p2fclient.base_headers)
             return Datasets(**r.json())
     def delete_remote_dataset(self, dataset_id: UUID | str):
         """Delete a single dataset record by the dataset ID
@@ -86,5 +86,5 @@ class datasets:
         """
         delete_url = self.dataset_url / str(dataset_id)
         if health_check(self.base_url):
-            r = requests.delete(delete_url, data=self.p2fclient.jswa(),
-                            headers={"Content-Type": "application/json"})
+            r = requests.delete(delete_url,
+                            headers=self.p2fclient.base_headers)

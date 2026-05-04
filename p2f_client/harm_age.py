@@ -25,15 +25,14 @@ class harm_age:
         """
         if health_check(self.base_url):
             r = requests.post(self.hda_url, 
-                         data=self.p2fclient.jswa("new_harm_age", new_harm_age.model_dump_json(exclude_unset=True)), 
-                         headers={"Content-Type": "application/json"})
+                         data=new_harm_age.model_dump_json(exclude_unset=True), 
+                         headers=self.p2fclient.base_headers)
             if r.ok:
                 return HARM_Data_Age(**r.json())
     def list_harm_ages(self) -> List[HARM_Data_Age]:
         if health_check(self.base_url):
             r = requests.get(self.hda_url, 
-                             data=self.p2fclient.jswa(), 
-                             headers={"Content-Type": "application/json"})
+                             headers=self.p2fclient.base_headers)
             if r.ok:
                 return [HARM_Data_Age(**x) for x in r.json()]
     def get_harm_age(self, ) -> HARM_Data_Age:

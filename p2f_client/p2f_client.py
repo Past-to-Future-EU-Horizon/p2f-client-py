@@ -42,7 +42,7 @@ class P2F_Client:
         :param email: email address of the client that will interact with the API, defaults to None
         :type email: Optional[str], optional
         """
-        self.version = Semantic_Version(major=0, minor=0, patch=19)
+        self.version = Semantic_Version(major=0, minor=0, patch=20)
         self.hostname = hostname
         self.port = port
         if https:
@@ -56,6 +56,7 @@ class P2F_Client:
         self.dotp2f_init()
         self.dotp2f_folder_create()
         self.dotp2f_read_config()
+        # Set an email if not
         if self.auth_email == None and email == None:
             new_email = input("Please provide an email address: ")
             while new_email[0] in [" "]:
@@ -67,6 +68,7 @@ class P2F_Client:
         elif self.auth_email == None and email is not None:
             self.auth_email = email
             self.dotp2f_update_config_parameter("EMAIL", new_email)
+        # Request a token
         if self.auth_token is None:
             if self.auth_token_expiration is None:
                 if self.auth_email is not None:
@@ -83,6 +85,10 @@ class P2F_Client:
                         run_token_request = run_token_request[-1]
                     if run_token_request in (None, "1"):
                         self.request_token()
+        self.base_headers = {"Accept": "application/json", 
+                             "Content-Type": "application/json", 
+                             "x-p2f-token": self.auth_token,
+                             "x-p2f-email": self.auth_email}
         self.child_class_loading()
         
     def probe_api_endpoint(self):
@@ -145,12 +151,12 @@ class P2F_Client:
         # calculate the datetime of the token before making the request
         #    so that our expiration time is just before actual expiration. 
         self.auth_token_expiration = datetime.now(tz=ZoneInfo("UTC")) + timedelta(hours=24)
-        self.dotp2f_update_config_parameter("TOKEN_EXPIRATION", self.auth_token_expiration.strftime(self.dotp2f_datetime_template))
+        self.dotp2f_update_config_parameter("EXPIRATION", self.auth_token_expiration.strftime(self.dotp2f_datetime_template))
         self.dotp2f_update_config_parameter("TOKEN", "")
         if health_check(self.base_url):
             r = requests.post(self.token_request_url, 
                               data=token_request_model.model_dump_json(exclude_unset=True),
-                              headers={"Content-Type": "application/json"})
+                              headers=self.p2fclient.base_headers)
             print(r.json())
     def set_token(self):
         """Reload the child classes once the token has been placed in the config file."""
@@ -167,14 +173,6 @@ class P2F_Client:
             self.child_class_loading()
         else:
             print("An irregular value was received, TOKEN WAS NOT LOADED FROM FILE. ")
-    def jswa(self, 
-             label: Optional[str]=None, 
-             JSON_str: Optional[str]=None):
-        """Utility function that will run with all API calls to authenticate to the API"""
-        if label is not None:
-            return f"""{{"auth":{self.temp_account.model_dump_json(exclude_unset=True)},"{label}":{JSON_str}}}"""
-        if label is None:
-            return self.temp_account.model_dump_json(exclude_unset=True)
     def dotp2f_init(self):
         """Utility function to initialize the paths for the .p2f config file and folder"""
         self.dotp2f_datetime_template = "%Y-%m-%dT%H-%M-%SZ"
@@ -189,7 +187,7 @@ class P2F_Client:
             with open(self.dotp2f_config, "w") as config_file:
                 config_file.write("EMAIL = ''\n")
                 config_file.write("TOKEN = ''\n")
-                config_file.write("TOKEN_EXPIRATION = ''\n")
+                config_file.write("EXPIRATION = ''\n")
     def dotp2f_update_config_parameter(self, parameter: str, new_value: str):
         """Utility function to update a parameter in the .p2f/CONFIG file"""
         with open(self.dotp2f_config, "r") as config_read:
@@ -220,9 +218,9 @@ class P2F_Client:
                 self.auth_email = config["EMAIL"]
             else:
                 self.auth_email = None
-        if "TOKEN_EXPIRATION" in config.keys():
-            if len(config["TOKEN_EXPIRATION"]) > 0:
-                auth_token_expiration = datetime.strptime(config["TOKEN_EXPIRATION"], self.dotp2f_datetime_template)
+        if "EXPIRATION" in config.keys():
+            if len(config["EXPIRATION"]) > 0:
+                auth_token_expiration = datetime.strptime(config["EXPIRATION"], self.dotp2f_datetime_template)
                 self.auth_token_expiration = auth_token_expiration.replace(tzinfo=ZoneInfo("UTC"))
             else:
                 self.auth_token_expiration = None

@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### v0.0.20 - 2026-05-04
+
+* Fix issue with .p2f/CONFIG file and TOKEN vs TOKEN_EXPIRATION parameter recognition
+* Re-align with API and new security model with API Key and Email in headers
+
 ### v0.0.18 - 2026-04-21
 
 * Elaborate more the README.md

@@ -31,7 +31,7 @@ class harm_numerical:
         """
         if health_check(self.base_url):
             r = requests.post(self.hdn_url, data=self.p2fclient.jswa("new_numeric", new_record.model_dump_json(exclude_unset=True)),
-                            headers={"Content-Type": "application/json"})
+                            headers=self.p2fclient.base_headers)
             return self.identify_numeric_object(r.json(), new_record.model_dump(exclude_unset=True))
     def list_harm_numericals(self, 
                              record_hash: Optional[str]=None,
@@ -63,8 +63,8 @@ class harm_numerical:
         params = {x:y for x, y in params.items() if y != None}
         if health_check(self.base_url):
             r = requests.get(self.hdn_url, 
-                            params=params, data=self.p2fclient.jswa(),
-                            headers={"Content-Type": "application/json"})
+                            params=params,
+                            headers=self.p2fclient.base_headers)
             return Return_HARM_Numerical(**r.json())
     def identify_numeric_object(self, 
                                 incoming_json, 

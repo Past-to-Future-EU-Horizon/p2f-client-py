@@ -30,8 +30,8 @@ class harm_data_records:
         """
         if health_check(self.base_url):
             r = requests.post(self.hdr_url,
-                            data=self.p2fclient.jswa("new_data_record", data_record.model_dump_json(exclude_unset=True)),
-                            headers={"Content-Type": "application/json"})
+                              data=data_record.model_dump_json(exclude_unset=True),
+                              headers=self.p2fclient.base_headers)
             return HARM_Data_Record(**r.json())
     def list_remote_records(self, 
                             dataset: Optional[str]=None,
@@ -50,8 +50,8 @@ class harm_data_records:
         params = {x:y for x, y in params.items() if y != None}
         if health_check(self.base_url):
             r = requests.get(self.hdr_url,
-                            params=params, data=self.p2fclient.jswa(),
-                            headers={"Content-Type": "application/json"})
+                             params=params,
+                             headers=self.p2fclient.base_headers)
             return [HARM_Data_Record(**x) for x in r.json()]
     def get_remote_record(self, record_hash: str):
         """Get an individual HARM_Data_Record by record_hash
@@ -62,8 +62,8 @@ class harm_data_records:
         :rtype: p2f-pydantic.harm_data_record.HARM_Data_Record
         """
         if health_check(self.base_url):
-            r = requests.get(self.hdr_url / record_hash, data=self.p2fclient.jswa(),
-                            headers={"Content-Type": "application/json"})
+            r = requests.get(self.hdr_url / record_hash,
+                             headers=self.p2fclient.base_headers)
             return HARM_Data_Record(**r.json())
     def delete_remote_dataset(self, record_hash: str):
         """Delete a HARM_Data_Record by the record hash from the API
@@ -72,8 +72,8 @@ class harm_data_records:
         :type record_hash: str
         """
         if health_check(self.base_url):
-            r = requests.delete(self.hdr_url / record_hash, data=self.p2fclient.jswa(),
-                            headers={"Content-Type": "application/json"})
+            r = requests.delete(self.hdr_url / record_hash,
+                                headers=self.p2fclient.base_headers)
     def calculate_hash(self, dataset_id: str, row_number: int, debugging=False):
         """Utility function for calculating a repeatable hash for the API
 
