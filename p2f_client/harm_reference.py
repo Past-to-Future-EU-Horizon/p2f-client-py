@@ -26,7 +26,7 @@ class harm_reference:
         :rtype: p2f_pydantic.harm_reference.HARM_Reference
         """
         if health_check(self.base_url):
-            r = requests.post(self.hr_url, data=self.p2fclient.jswa("new_reference", new_reference.model_dump_json(exclude_unset=True)),
+            r = requests.post(self.hr_url, data=new_reference.model_dump_json(exclude_unset=True),
                             headers=self.p2fclient.base_headers)
             if r.ok:
                 return (HARM_Reference(**r.json()))

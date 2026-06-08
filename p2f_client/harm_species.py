@@ -26,8 +26,8 @@ class harm_species:
         """
         if health_check(self.base_url):
             r = requests.post(self.hds_url, 
-                              data=self.p2fclient.jswa("new_species", new_species.model_dump_json(exclude_unset=True)),
-                            headers=self.p2fclient.base_headers)
+                              data=new_species.model_dump_json(exclude_unset=True),
+                              headers=self.p2fclient.base_headers)
             return HARM_Species(**r.json())
     def list_harm_species(self, 
                           tax_domain: Optional[str]=None,

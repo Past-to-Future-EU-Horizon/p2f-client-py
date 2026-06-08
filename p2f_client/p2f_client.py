@@ -116,6 +116,10 @@ class P2F_Client:
     def child_class_loading(self):
         """A function to reload the child data classes for interacting with specific API components."""
         # Separated this out so we can reload it later. 
+        self.base_headers = {"Accept": "application/json", 
+                             "Content-Type": "application/json", 
+                             "x-p2f-token": self.auth_token,
+                             "x-p2f-email": self.auth_email}
         self.datasets = datasets(self)
         self.harm_data_records = harm_data_records(self)
         self.harm_data_type = harm_data_type(self)
@@ -156,7 +160,7 @@ class P2F_Client:
         if health_check(self.base_url):
             r = requests.post(self.token_request_url, 
                               data=token_request_model.model_dump_json(exclude_unset=True),
-                              headers=self.p2fclient.base_headers)
+                              headers=self.base_headers)
             print(r.json())
     def set_token(self):
         """Reload the child classes once the token has been placed in the config file."""
@@ -179,6 +183,8 @@ class P2F_Client:
         home = pathlib.Path.home()
         self.dotp2f_dir = home / ".p2f"
         self.dotp2f_config = self.dotp2f_dir / "CONFIG"
+        if "auth_token_expiration" not in locals().keys():
+            self.auth_token_expiration = None
     def dotp2f_folder_create(self):
         """Utility function to create .p2f folder and CONFIG file if they do not exist."""
         if self.dotp2f_dir.exists() == False:

@@ -30,7 +30,7 @@ class harm_numerical:
         :rtype: object from p2f_pydantic.harm_data_numerical
         """
         if health_check(self.base_url):
-            r = requests.post(self.hdn_url, data=self.p2fclient.jswa("new_numeric", new_record.model_dump_json(exclude_unset=True)),
+            r = requests.post(self.hdn_url, data=new_record.model_dump_json(exclude_unset=True),
                             headers=self.p2fclient.base_headers)
             return self.identify_numeric_object(r.json(), new_record.model_dump(exclude_unset=True))
     def list_harm_numericals(self, 

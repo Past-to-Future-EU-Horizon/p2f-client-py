@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v0.0.22 - 2026-06-08
+
+* More bug fixes from previous authorization method
+
 ### v0.0.21 - 2026-06-08
 
 * Upgrade minimum p2f-pydantic version

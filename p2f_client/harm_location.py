@@ -28,8 +28,8 @@ class harm_location:
         """
         if health_check(self.base_url):
             r = requests.post(self.hdl_url, 
-                              data=self.p2fclient.jswa("new_location", new_location.model_dump_json(exclude_unset=True)),
-                            headers=self.p2fclient.base_headers)
+                              data=new_location.model_dump_json(exclude_unset=True),
+                              headers=self.p2fclient.base_headers)
             return HARM_Location(**r.json())
     def list_harm_locations(self,
                             bounding_box: Optional[HARM_Bounding_Box]=None,

@@ -26,8 +26,8 @@ class harm_timeslice:
         """
         if health_check(self.base_url):
             r = requests.post(self.ht_url, 
-                              data=self.p2fclient.jswa("new_harm_timeslice", new_timeslice.model_dump_json(exclude_unset=True)),
-                            headers=self.p2fclient.base_headers)
+                              data=new_timeslice.model_dump_json(exclude_unset=True),
+                              headers=self.p2fclient.base_headers)
             return HARM_Timeslice(**r.json())
     def list_timeslices(self,
                         named_time_period: Optional[str]=None, 
