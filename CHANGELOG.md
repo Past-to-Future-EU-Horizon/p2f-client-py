@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### v0.0.21 - 2026-06-08
+
+* Upgrade minimum p2f-pydantic version
+* Bug fixes from p2f-pydantic upgrade
+
 ### v0.0.20 - 2026-05-04
 
 * Fix issue with .p2f/CONFIG file and TOKEN vs TOKEN_EXPIRATION parameter recognition

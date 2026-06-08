@@ -1,5 +1,5 @@
 # Local libraries
-from p2f_pydantic.harm_data_metadata import HARM_Data_Species
+from p2f_pydantic.harm_species import HARM_Species
 from .conn import health_check
 # Third Party Libraries
 import requests
@@ -15,8 +15,8 @@ class harm_species:
         self.base_url = p2fclient.base_url
         self.prefix = "harm-data-species/"
         self.hds_url = self.base_url / self.prefix
-        self.data_model = HARM_Data_Species
-    def upload_harm_species(self, new_species: HARM_Data_Species) -> HARM_Data_Species:
+        self.data_model = HARM_Species
+    def upload_harm_species(self, new_species: HARM_Species) -> HARM_Species:
         """Upload a HARM_Data_Species directly to the API
 
         :param new_species: The new species object to be uploaded
@@ -28,7 +28,7 @@ class harm_species:
             r = requests.post(self.hds_url, 
                               data=self.p2fclient.jswa("new_species", new_species.model_dump_json(exclude_unset=True)),
                             headers=self.p2fclient.base_headers)
-            return HARM_Data_Species(**r.json())
+            return HARM_Species(**r.json())
     def list_harm_species(self, 
                           tax_domain: Optional[str]=None,
                           tax_kingdom: Optional[str]=None,
@@ -46,7 +46,7 @@ class harm_species:
                           tax_species: Optional[str]=None,
                           tax_subspecies: Optional[str]=None,
                           common_name: Optional[str]=None,
-                          display_species: Optional[str]=None,) -> List[HARM_Data_Species]:
+                          display_species: Optional[str]=None,) -> List[HARM_Species]:
         """List species that exist on the API based on taxonomy, common name, or the display name.
             Due to writing styles, common name and display name are unreliable search parameters
                 at this time. 
@@ -68,8 +68,8 @@ class harm_species:
             r = requests.get(self.hds_url, 
                             params=params,
                             headers=self.p2fclient.base_headers)
-            return [HARM_Data_Species(**x) for x in r.json()]
-    def get_harm_species(self, species_identifier: UUID) -> HARM_Data_Species:
+            return [HARM_Species(**x) for x in r.json()]
+    def get_harm_species(self, species_identifier: UUID) -> HARM_Species:
         """Get an individual harm species based on the API species id
 
         :param species_identifier: A species ID from the API
@@ -80,7 +80,7 @@ class harm_species:
         if health_check(self.base_url):
             r = requests.get(self.hds_url/species_identifier,
                             headers=self.p2fclient.base_headers)
-            return HARM_Data_Species(**r.json())
+            return HARM_Species(**r.json())
     def delete_harm_species(self, species_identifier: UUID):
         """Delete a species from the P2F API
 

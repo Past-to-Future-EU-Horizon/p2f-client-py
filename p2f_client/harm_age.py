@@ -1,5 +1,5 @@
 # local libraries
-from p2f_pydantic.harm_age import HARM_Data_Age
+from p2f_pydantic.harm_age import HARM_Rec_Age
 from .conn import health_check
 # Third part libraries
 import requests
@@ -14,28 +14,28 @@ class harm_age:
         self.base_url = p2fclient.base_url
         self.prefix = "harm-data-age/"
         self.hda_url = self.base_url / self.prefix
-        self.data_model = HARM_Data_Age
-    def upload_harm_age(self, new_harm_age: HARM_Data_Age) -> HARM_Data_Age:
+        self.data_model = HARM_Rec_Age
+    def upload_harm_age(self, new_harm_age: HARM_Rec_Age) -> HARM_Rec_Age:
         """Upload a new HARM Data Age to the API directly. 
 
         :param new_harm_age: new Data Age object
-        :type new_harm_age: p2f_pydantic.harm_age.HARM_Data_Age
+        :type new_harm_age: p2f_pydantic.harm_age.HARM_Rec_Age
         :return: new Harm Data Age object as processed by API
-        :rtype: p2f_pydantic.harm_age.HARM_Data_Age
+        :rtype: p2f_pydantic.harm_age.HARM_Rec_Age
         """
         if health_check(self.base_url):
             r = requests.post(self.hda_url, 
                          data=new_harm_age.model_dump_json(exclude_unset=True), 
                          headers=self.p2fclient.base_headers)
             if r.ok:
-                return HARM_Data_Age(**r.json())
-    def list_harm_ages(self) -> List[HARM_Data_Age]:
+                return HARM_Rec_Age(**r.json())
+    def list_harm_ages(self) -> List[HARM_Rec_Age]:
         if health_check(self.base_url):
             r = requests.get(self.hda_url, 
                              headers=self.p2fclient.base_headers)
             if r.ok:
-                return [HARM_Data_Age(**x) for x in r.json()]
-    def get_harm_age(self, ) -> HARM_Data_Age:
+                return [HARM_Rec_Age(**x) for x in r.json()]
+    def get_harm_age(self, ) -> HARM_Rec_Age:
         pass
-    def delete_harm_age(self, ) -> HARM_Data_Age:
+    def delete_harm_age(self, ) -> HARM_Rec_Age:
         pass

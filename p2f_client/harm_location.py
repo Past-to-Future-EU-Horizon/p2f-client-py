@@ -1,5 +1,5 @@
 # Local libraries
-from p2f_pydantic.harm_data_metadata import HARM_Bounding_Box, HARM_Location
+from p2f_pydantic.harm_location import HARM_Bounding_Box, HARM_Location
 from .conn import health_check
 # Third Party Libraries
 import requests

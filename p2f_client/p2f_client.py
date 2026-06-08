@@ -42,7 +42,7 @@ class P2F_Client:
         :param email: email address of the client that will interact with the API, defaults to None
         :type email: Optional[str], optional
         """
-        self.version = Semantic_Version(major=0, minor=0, patch=20)
+        self.version = Semantic_Version(major=0, minor=0, patch=21)
         self.hostname = hostname
         self.port = port
         if https:
