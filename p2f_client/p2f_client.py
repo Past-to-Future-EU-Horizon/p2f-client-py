@@ -10,6 +10,8 @@ from .harm_reference import harm_reference
 from .harm_age import harm_age
 from .link_git import git
 from .keywords import keywords
+from .season import season
+from .seasonality import seasonality
 from .conn import health_check
 from p2f_pydantic.temp_accounts import Temp_Account
 from p2f_pydantic.system import API_Metadata, Semantic_Version
@@ -43,7 +45,7 @@ class P2F_Client:
         :param email: email address of the client that will interact with the API, defaults to None
         :type email: Optional[str], optional
         """
-        self.version = Semantic_Version(major=0, minor=0, patch=23)
+        self.version = Semantic_Version(major=0, minor=0, patch=25)
         self.hostname = hostname
         self.port = port
         if https:
@@ -132,6 +134,8 @@ class P2F_Client:
         self.harm_age = harm_age(self)
         self.link_git = git(self)
         self.keywords = keywords(self)
+        self.season = season(self)
+        self.seasonality = seasonality(self)
     def request_token(self):
         """Sends a requst to the API to request an API token through email. 
             If the client library does not have an email address currently configured
