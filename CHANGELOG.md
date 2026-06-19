@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### v0.0.24 - 2026-06-19
+
+* Together with v0.0.23 as CHANGELOG was missed
+* Add keywords with v0.0.80 of the API library
+
 ### v0.0.22 - 2026-06-08
 
 * More bug fixes from previous authorization method

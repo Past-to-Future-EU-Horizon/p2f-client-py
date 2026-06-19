@@ -9,6 +9,7 @@ from .harm_timeslice import harm_timeslice
 from .harm_reference import harm_reference
 from .harm_age import harm_age
 from .link_git import git
+from .keywords import keywords
 from .conn import health_check
 from p2f_pydantic.temp_accounts import Temp_Account
 from p2f_pydantic.system import API_Metadata, Semantic_Version
@@ -130,6 +131,7 @@ class P2F_Client:
         self.harm_reference = harm_reference(self)
         self.harm_age = harm_age(self)
         self.link_git = git(self)
+        self.keywords = keywords(self)
     def request_token(self):
         """Sends a requst to the API to request an API token through email. 
             If the client library does not have an email address currently configured
