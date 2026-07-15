@@ -44,7 +44,7 @@ class P2F_Client:
         :param email: email address of the client that will interact with the API, defaults to None
         :type email: Optional[str], optional
         """
-        self.version = Semantic_Version(major=0, minor=0, patch=25)
+        self.version = Semantic_Version(major=0, minor=0, patch=27)
         self.hostname = hostname
         self.port = port
         if https:
@@ -119,7 +119,7 @@ class P2F_Client:
             r = requests.post(self.token_request_url, 
                               data=token_request_model.model_dump_json(exclude_unset=True),
                               headers=self.base_headers)
-            print(r.json())
+            return r.json()
     def set_token(self, token):
         self.auth_token = token
         self.child_class_loading()

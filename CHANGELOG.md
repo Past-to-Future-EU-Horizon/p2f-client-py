@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v0.0.27 - 2026-07-15
+
+* Update return of request token function of the base API client - improvement more for the p2f-portal. 
+
 ### v0.0.26 - 2026-06-19
 
 * Due to usage of the client library change, the .p2f config file and setup is removed. As most interaction and use of the p2f-client-py library will be through the Streamlit based Portal, variable based usage will be better. In the future the authentication method will be moved to OpenID Connect (OIDC) and this method will go away. 

@@ -176,3 +176,4 @@ cython_debug/
 uv.lock
 Pliocene_SSTs/*
 extra_testing.ipynb
+iodp_locations.ipynb
