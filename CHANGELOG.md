@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v0.0.28 - 2026-08-27
+
+* Add `is_proxy` boolean search flag to harm_data_types list function. 
+
 ### v0.0.27 - 2026-07-15
 
 * Update return of request token function of the base API client - improvement more for the p2f-portal. 
