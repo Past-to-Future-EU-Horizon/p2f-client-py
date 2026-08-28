@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### v0.0.30 - 2026-08-28
+
+* Add assign and remove to endpoints that have an assign and remove
+* Complete methods in harm_age for record list, get, and delete
+
 ### v0.0.28 - 2026-08-27
 
 * Add `is_proxy` boolean search flag to harm_data_types list function. 

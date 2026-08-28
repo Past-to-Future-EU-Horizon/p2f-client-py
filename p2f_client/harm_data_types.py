@@ -82,3 +82,17 @@ class harm_data_type:
         if health_check(self.base_url):
             r = requests.delete(self.hdt_url / datatype_id,
                                 headers=self.p2fclient.base_headers)
+    def assign_data_type_to_dataset(self, 
+                                    datatype_id: UUID, 
+                                    dataset_id: UUID):
+        if health_check(self.base_url):
+            assign_url = self.hdt_url / datatype_id / "assign" / dataset_id
+            r = requests.post(assign_url,
+                              headers=self.p2fclient.base_headers)
+    def remove_data_type_from_dataset(self,
+                                      datatype_id: UUID, 
+                                      dataset_id: UUID):
+        if health_check(self.base_url):
+            remove_url = self.hdt_url / datatype_id / "remove" / dataset_id
+            r = requests.delete(remove_url,
+                                headers=self.p2fclient.base_headers)

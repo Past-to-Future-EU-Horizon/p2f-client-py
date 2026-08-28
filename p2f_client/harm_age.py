@@ -29,13 +29,26 @@ class harm_age:
                          headers=self.p2fclient.base_headers)
             if r.ok:
                 return HARM_Rec_Age(**r.json())
-    def list_harm_ages(self) -> List[HARM_Rec_Age]:
+    def list_harm_ages(self, 
+                       older_year: Optional[int] = None, 
+                       recent_year: Optional[int] = None) -> List[HARM_Rec_Age]:
+        params = {
+            "recent_year_search": recent_year,
+            "older_year_search": older_year
+        }
         if health_check(self.base_url):
             r = requests.get(self.hda_url, 
-                             headers=self.p2fclient.base_headers)
+                             headers=self.p2fclient.base_headers,
+                             params=params)
             if r.ok:
                 return [HARM_Rec_Age(**x) for x in r.json()]
-    def get_harm_age(self, ) -> HARM_Rec_Age:
-        pass
-    def delete_harm_age(self, ) -> HARM_Rec_Age:
-        pass
+    def get_harm_age(self, record_hash: str) -> HARM_Rec_Age:
+        if health_check(self.base_url):
+            get_record_url = self.hda_url / record_hash
+            r = requests.get(get_record_url, 
+                             headers=self.p2fclient.base_headers)
+    def delete_harm_age(self, record_hash: str) -> HARM_Rec_Age:
+        if health_check(self.base_url):
+            delete_record_url = self.hda_url / record_hash
+            r = requests.delete(delete_record_url,
+                                headers=self.p2fclient.base_headers)
