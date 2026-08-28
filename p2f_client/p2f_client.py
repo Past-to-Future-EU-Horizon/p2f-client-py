@@ -7,6 +7,7 @@ from .harm_location import harm_location
 from .harm_species import harm_species
 from .harm_timeslice import harm_timeslice
 from .harm_reference import harm_reference
+from .harm_ds_timecov import harm_ds_timecoverage
 from .harm_age import harm_age
 from .link_git import git
 from .keywords import keywords
@@ -104,6 +105,7 @@ class P2F_Client:
         self.keywords = keywords(self)
         self.season = season(self)
         self.seasonality = seasonality(self)
+        self.harm_ds_timecoverage = harm_ds_timecoverage(self)
     def request_token(self):
         """Sends a requst to the API to request an API token through email. 
             If the client library does not have an email address currently configured
