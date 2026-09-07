@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### v0.0.34 - 2026-09-07
+
+* Bump p2f-pydantic version to v0.0.34 due to annotation error in v0.0.33
+* Due to error in API library, skipping p2f-client-py v0.0.31-0.0.33
+
 ### v0.0.30 - 2026-08-28
 
 * Add assign and remove to endpoints that have an assign and remove
