@@ -104,7 +104,7 @@ class harm_location:
         """
         # params = {"location_identifier": str(location_identifier),
         #           "record_hash": record_hash}
-        assign_url = self.hdl_url / "assign"
+        assign_url = self.hdl_url / "assign-record"
         assign_url.args["location_identifier"] = str(location_identifier)
         assign_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
@@ -120,9 +120,37 @@ class harm_location:
         """
         # params = {"location_identifier": str(location_identifier),
         #           "record_hash": record_hash}
-        remove_url = self.hdl_url / "remove"
+        remove_url = self.hdl_url / "remove-record"
         remove_url.args["location_identifier"] = str(location_identifier)
         remove_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
             r = requests.post(remove_url,
                             headers=self.p2fclient.base_headers)
+    def assign_location_to_dataset(self, location_identifier: UUID, dataset_id: UUID):
+        """Assign a location to a dataset
+
+        :param location_identifier: Unique ID of location from server
+        :type location_identifier: UUID
+        :param dataset_id: Unique ID of dataset from server
+        :type dataset_id: UUID
+        """
+        assign_url = self.hdl_url / "assign-dataset"
+        assign_url.args["location_identifier"] = str(location_identifier)
+        assign_url.args["record_hash"] = str(dataset_id)
+        if health_check(self.base_url):
+            r = requests.post(assign_url,
+                              headers=self.p2fclient.base_headers)
+    def remove_location_from_dataset(self, location_identifier: UUID, dataset_id: UUID):
+        """Remove a location assigned to a dataset
+
+        :param location_identifier: Unique ID of location from server
+        :type location_identifier: UUID
+        :param dataset_id: Unique ID of dataset from server
+        :type dataset_id: UUID
+        """
+        remove_url = self.hdl_url / "remove-dataset"
+        remove_url.args["location_identifier"] = str(location_identifier)
+        remove_url.args["record_hash"] = str(dataset_id)
+        if health_check(self.base_url):
+            r = requests.post(remove_url,
+                              headers=self.p2fclient.base_headers)

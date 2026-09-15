@@ -1,3 +1,10 @@
+# Batteries included libraries
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
+from typing import Optional
+# Third Party Libraries
+import requests
+import furl
 # Local libraries
 from .datasets import datasets
 from .harm_data_record import harm_data_records
@@ -16,14 +23,6 @@ from .seasonality import seasonality
 from .conn import health_check
 from p2f_pydantic.temp_accounts import Temp_Account
 from p2f_pydantic.system import API_Metadata, Semantic_Version
-# Third Party Libraries
-import requests
-import furl
-# Batteries included libraries
-from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
-from typing import Optional
-
 
 class P2F_Client:
     """Base P2F Client class that initializes all interactions with the P2F API
@@ -45,7 +44,7 @@ class P2F_Client:
         :param email: email address of the client that will interact with the API, defaults to None
         :type email: Optional[str], optional
         """
-        self.version = Semantic_Version(major=0, minor=0, patch=34)
+        self.version = Semantic_Version(major=0, minor=0, patch=35)
         self.hostname = hostname
         self.port = port
         if https:

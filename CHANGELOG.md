@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v0.0.35 - 2026-09-15 
+
+* Update HARM locations with assignment in line with p2f-api v0.0.122
+
 ### v0.0.34 - 2026-09-07
 
 * Bump p2f-pydantic version to v0.0.34 due to annotation error in v0.0.33
