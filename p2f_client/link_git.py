@@ -67,7 +67,7 @@ class git:
             r = requests.delete(self.git_url,
                                 params={"git_repo_id": git_repo_id},
                                 headers=self.p2fclient.base_headers)
-    def assign_git_repository(self, git_repo_id: str, dataset_id: str):
+    def assign_git_repository(self, git_repo_id: str, dataset_id: UUID):
         """Assign a git repository to a dataset by git_repo_id and dataset_id
 
         :param git_repo_id: git repository id from API
@@ -77,11 +77,11 @@ class git:
         """
         assign_url = self.git_url / "assign"
         assign_url.args["git_repo_id"] = git_repo_id
-        assign_url.args["dataset_id"] = dataset_id
+        assign_url.args["dataset_id"] = str(dataset_id)
         if health_check(self.base_url):
             r = requests.post(assign_url, 
                               headers=self.p2fclient.base_headers)
-    def remove_git_repository(self, git_repo_id: str, dataset_id: str):
+    def remove_git_repository(self, git_repo_id: str, dataset_id: UUID):
         """Remove a git repository assigned to a dataset by git_repo_id and dataset_id
 
         :param git_repo_id: git repository id from API
@@ -91,7 +91,7 @@ class git:
         """
         remove_url = self.git_url / "remove"
         remove_url.args["git_repo_id"] = git_repo_id
-        remove_url.args["dataset_id"] = dataset_id
+        remove_url.args["dataset_id"] = str(dataset_id)
         if health_check(self.base_url):
             r = requests.post(remove_url, 
                               headers=self.p2fclient.base_headers)

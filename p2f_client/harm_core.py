@@ -42,7 +42,7 @@ class harm_core:
         :rtype: CoreSegment
         """
         if health_check(self.base_url):
-            segment_url = self.core_url / core_id / "segment"
+            segment_url = self.core_url / str(core_id) / "segment"
             r = requests.post(segment_url, 
                               data=new_core_segment.model_dump_json(exclude_unset=True),
                               headers=self.p2fclient.base_headers)
@@ -66,7 +66,7 @@ class harm_core:
         :rtype: List[CoreSegment]
         """
         if health_check(self.base_url):
-            segment_url = self.core_url / core_id / "segment"
+            segment_url = self.core_url / str(core_id) / "segment"
             r = requests.get(segment_url,
                              headers=self.p2fclient.base_headers)
             return [CoreSegment(**x) for x in r.json()]
@@ -79,7 +79,7 @@ class harm_core:
         :rtype: Core
         """
         if health_check(self.base_url):
-            core_url = self.core_url / core_id
+            core_url = self.core_url / str(core_id)
             r = requests.get(core_url, 
                              headers=self.p2fclient.base_headers)
             return Core(**r.json())
@@ -94,7 +94,7 @@ class harm_core:
         :rtype: CoreSegment
         """
         if health_check(self.base_url):
-            segment_url = self.core_url / core_id / "segment" / core_segment_id
+            segment_url = self.core_url / str(core_id) / "segment" / str(core_segment_id)
             r = requests.get(segment_url, 
                              headers=self.p2fclient.base_headers)
             return CoreSegment(**r.json())
@@ -105,7 +105,7 @@ class harm_core:
         :type core_id: UUID
         """
         if health_check(self.base_url):
-            core_url = self.core_url / core_id
+            core_url = self.core_url / str(core_id)
             r = requests.delete(core_url, 
                                 headers=self.p2fclient.base_headers)
     def delete_core_segment(self, core_id: UUID, core_segment_id: UUID) -> None:
@@ -117,7 +117,7 @@ class harm_core:
         :type core_segment_id: UUID
         """
         if health_check(self.base_url):
-            segment_url = self.core_url / core_id / "segment" / core_segment_id
+            segment_url = self.core_url / str(core_id) / "segment" / str(core_segment_id)
             r = requests.delete(segment_url,
                                 headers=self.p2fclient.base_headers)
     def assign_core_segment_to_record_hash(self, core_segment_id: UUID, record_hash: str) -> None:
@@ -129,7 +129,7 @@ class harm_core:
         :type record_hash: str
         """
         if health_check(self.base_url):
-            segment_url = self.core_url / "segment" / core_segment_id / "assign" / record_hash
+            segment_url = self.core_url / "segment" / str(core_segment_id) / "assign" / record_hash
             r = requests.post(segment_url, 
                               headers=self.p2fclient.base_headers)
     def remove_core_segment_from_record_hash(self, core_segment_id: UUID, record_hash: str) -> None:
@@ -141,6 +141,6 @@ class harm_core:
         :type record_hash: str
         """
         if health_check(self.base_url):
-            segment_url = self.core_url / "segment" / core_segment_id / "remove" / record_hash
+            segment_url = self.core_url / "segment" / str(core_segment_id) / "remove" / record_hash
             r = requests.delete(segment_url,
                                 headers=self.p2fclient.base_headers)

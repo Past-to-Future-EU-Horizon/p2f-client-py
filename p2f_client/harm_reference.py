@@ -54,7 +54,7 @@ class harm_reference:
         :rtype: p2f_pydantic.harm_reference.HARM_Reference
         """
         if health_check(self.base_url):
-            r = requests.get(self.hr_url / reference_id,
+            r = requests.get(self.hr_url / str(reference_id),
                             headers=self.p2fclient.base_headers)
             if r.ok:
                 return HARM_Reference(**r.json())
@@ -65,7 +65,7 @@ class harm_reference:
         :type reference_id: UUID
         """
         if health_check(self.base_url):
-            r = requests.delete(self, reference_id,
+            r = requests.delete(self.hr_url / str(reference_id),
                             headers=self.p2fclient.base_headers)
     def assign_harm_reference(self, 
                               reference_id: UUID, 
@@ -78,7 +78,7 @@ class harm_reference:
         :type record_hash: str
         """
         assign_url = self.hr_url / "assign"
-        assign_url.args["reference_id"] = reference_id
+        assign_url.args["reference_id"] = str(reference_id)
         assign_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
             r = requests.post(assign_url,
@@ -94,7 +94,7 @@ class harm_reference:
         :type record_hash: str
         """
         remove_url = self.hr_url / "remove"
-        remove_url.args["reference_id"] = reference_id
+        remove_url.args["reference_id"] = str(reference_id)
         remove_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
             r = requests.delete(remove_url,

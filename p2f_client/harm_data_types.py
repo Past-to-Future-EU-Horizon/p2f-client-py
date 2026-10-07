@@ -53,7 +53,7 @@ class harm_data_type:
         params = {"measure": measure,
                   "unit_of_measure": unit_of_measure,
                   "method": method, 
-                  "dataset_id": dataset_id,
+                  "dataset_id": str(dataset_id),
                   "is_proxy": is_proxy}
         params = {x:y for x, y in params.items() if y != None}
         if health_check(self.base_url):
@@ -70,7 +70,7 @@ class harm_data_type:
         :rtype: p2f_pydantic.harm_data_types.HARM_Data_Type
         """
         if health_check(self.base_url):
-            r = requests.get(self.hdt_url / datatype_id,
+            r = requests.get(self.hdt_url / str(datatype_id),
                              headers=self.p2fclient.base_headers)
             return HARM_Data_Type(**r.json())
     def delete_data_type(self, datatype_id: UUID):
@@ -80,19 +80,19 @@ class harm_data_type:
         :type datatype_id: UUID
         """
         if health_check(self.base_url):
-            r = requests.delete(self.hdt_url / datatype_id,
+            r = requests.delete(self.hdt_url / str(datatype_id),
                                 headers=self.p2fclient.base_headers)
     def assign_data_type_to_dataset(self, 
                                     datatype_id: UUID, 
                                     dataset_id: UUID):
         if health_check(self.base_url):
-            assign_url = self.hdt_url / datatype_id / "assign" / dataset_id
+            assign_url = self.hdt_url / str(datatype_id) / "assign" / str(dataset_id)
             r = requests.post(assign_url,
                               headers=self.p2fclient.base_headers)
     def remove_data_type_from_dataset(self,
                                       datatype_id: UUID, 
                                       dataset_id: UUID):
         if health_check(self.base_url):
-            remove_url = self.hdt_url / datatype_id / "remove" / dataset_id
+            remove_url = self.hdt_url / str(datatype_id) / "remove" / str(dataset_id)
             r = requests.delete(remove_url,
                                 headers=self.p2fclient.base_headers)

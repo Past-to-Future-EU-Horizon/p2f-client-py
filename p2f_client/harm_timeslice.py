@@ -63,7 +63,7 @@ class harm_timeslice:
         :rtype: p2f_pydantic.harm_timeslices.HARM_Timeslice
         """
         if health_check(self.base_url):
-            r = requests.get(self.ht_url / timeslice_id,
+            r = requests.get(self.ht_url / str(timeslice_id),
                             headers=self.p2fclient.base_headers)
             return HARM_Timeslice(**r.json())
     def delete_timeslice(self, 
@@ -74,7 +74,7 @@ class harm_timeslice:
         :type timeslice_id: UUID
         """
         if health_check(self.base_url):
-            r = requests.delete(self.ht_url / timeslice_id,
+            r = requests.delete(self.ht_url / str(timeslice_id),
                             headers=self.p2fclient.base_headers)
     def assign_timeslice(self, 
                          timeslice_id: UUID, 
@@ -87,7 +87,7 @@ class harm_timeslice:
         :type record_hash: str
         """
         assign_url = self.ht_url / "assign"
-        assign_url.args["timeslice_id"] = timeslice_id
+        assign_url.args["timeslice_id"] = str(timeslice_id)
         assign_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
             r = requests.post(assign_url,
@@ -103,7 +103,7 @@ class harm_timeslice:
         :type record_hash: str
         """
         remove_url = self.ht_url / "remove"
-        remove_url.args["timeslice_id"] = timeslice_id
+        remove_url.args["timeslice_id"] = str(timeslice_id)
         remove_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
             r = requests.delete(remove_url,

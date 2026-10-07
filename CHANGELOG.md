@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v0.0.37 - 2026-10-07
+
+* Fix a bug with UUID() object encoding and making REST API requests
+
 ### v0.0.36 - 2026-10-07
 
 * Add HARM Core and HARM Core Segment to client library

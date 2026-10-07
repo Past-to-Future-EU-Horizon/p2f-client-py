@@ -23,10 +23,10 @@ class harm_ds_timecoverage:
             return HARM_DS_TimeCoverage(**r.json())
     def get_dataset_timecoverage(self, dataset_id: UUID) -> HARM_DS_TimeCoverage:
         if health_check(self.base_url):
-            r = requests.get(self.hdt_url / dataset_id,
+            r = requests.get(self.hdt_url / str(dataset_id),
                              headers=self.p2fclient.base_headers)
             return HARM_DS_TimeCoverage(**r.json())
     def delete_dataset_timecoverage(self, dataset_id: UUID):
         if health_check(self.base_url):
-            r = requests.delete(self.hdt_url / dataset_id,
+            r = requests.delete(self.hdt_url / str(dataset_id),
                                 headers=self.p2fclient.base_headers)

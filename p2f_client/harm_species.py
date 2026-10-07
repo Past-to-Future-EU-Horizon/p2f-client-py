@@ -78,7 +78,7 @@ class harm_species:
         :rtype: p2f_pydantic.harm_data_metadata.HARM_Data_Species
         """
         if health_check(self.base_url):
-            r = requests.get(self.hds_url/species_identifier,
+            r = requests.get(self.hds_url/str(species_identifier),
                             headers=self.p2fclient.base_headers)
             return HARM_Species(**r.json())
     def delete_harm_species(self, species_identifier: UUID):
@@ -88,7 +88,7 @@ class harm_species:
         :type species_identifier: UUID
         """
         if health_check(self.base_url):
-            r = requests.delete(self.hds_url/species_identifier,
+            r = requests.delete(self.hds_url/str(species_identifier),
                             headers=self.p2fclient.base_headers)
     def assign_species_to_record(self, species_identifier: UUID, record_hash: str):
         """Assign a species to a data record using the record hash. 
@@ -99,7 +99,7 @@ class harm_species:
         :type record_hash: str
         """
         assign_url = self.hds_url / "assign"
-        assign_url.args["species_id"] = species_identifier
+        assign_url.args["species_id"] = str(species_identifier)
         assign_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
             r = requests.post(assign_url,
@@ -113,7 +113,7 @@ class harm_species:
         :type record_hash: str
         """
         remove_url = self.hds_url / "remove"
-        remove_url.args["species_id"] = species_identifier
+        remove_url.args["species_id"] = str(species_identifier)
         remove_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
             r = requests.post(remove_url,
