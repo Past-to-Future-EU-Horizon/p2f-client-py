@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v0.0.36 - 2026-10-07
+
+* Add HARM Core and HARM Core Segment to client library
+
 ### v0.0.35 - 2026-09-15 
 
 * Update HARM locations with assignment in line with p2f-api v0.0.122

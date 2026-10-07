@@ -16,6 +16,7 @@ from .harm_timeslice import harm_timeslice
 from .harm_reference import harm_reference
 from .harm_ds_timecov import harm_ds_timecoverage
 from .harm_age import harm_age
+from .harm_core import harm_core
 from .link_git import git
 from .keywords import keywords
 from .season import season
@@ -44,7 +45,7 @@ class P2F_Client:
         :param email: email address of the client that will interact with the API, defaults to None
         :type email: Optional[str], optional
         """
-        self.version = Semantic_Version(major=0, minor=0, patch=35)
+        self.version = Semantic_Version(major=0, minor=0, patch=36)
         self.hostname = hostname
         self.port = port
         if https:
@@ -105,6 +106,7 @@ class P2F_Client:
         self.season = season(self)
         self.seasonality = seasonality(self)
         self.harm_ds_timecoverage = harm_ds_timecoverage(self)
+        self.harm_core = harm_core(self)
     def request_token(self):
         """Sends a requst to the API to request an API token through email. 
             If the client library does not have an email address currently configured
