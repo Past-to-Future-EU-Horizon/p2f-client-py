@@ -39,7 +39,8 @@ class harm_location:
                             maximum_elevation: Optional[float]=None,
                             min_location_age: Optional[float]=None,
                             max_location_age: Optional[float]=None, 
-                            dataset_id: Optional[UUID]=None):
+                            dataset_id: Optional[UUID]=None,
+                            active_locations: Optional[bool] = None,) -> List[HARM_Location]:
         """A list of locations based on the filters provided. 
 
         :param bounding_box: Bounding box with N, E, S, W defined in WGS84 Decimal Degrees, defaults to None
@@ -65,7 +66,8 @@ class harm_location:
             "maximum_elevation": maximum_elevation,
             "min_location_age": min_location_age,
             "max_location_age": max_location_age,
-            "dataset_id": dataset_id
+            "dataset_id": dataset_id,
+            "active_locations": active_locations,
             }
         params = {x: y for x, y in params.items() if y != None}
         if health_check(self.base_url):

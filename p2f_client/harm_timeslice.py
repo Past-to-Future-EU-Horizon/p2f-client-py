@@ -76,7 +76,7 @@ class harm_timeslice:
         if health_check(self.base_url):
             r = requests.delete(self.ht_url / str(timeslice_id),
                             headers=self.p2fclient.base_headers)
-    def assign_timeslice(self, 
+    def assign_timeslice_record(self, 
                          timeslice_id: UUID, 
                          record_hash: str):
         """Assign a timeslice_id to a record hash on the API. 
@@ -86,13 +86,13 @@ class harm_timeslice:
         :param record_hash: Record hash that exists in the API
         :type record_hash: str
         """
-        assign_url = self.ht_url / "assign"
+        assign_url = self.ht_url / "assign" / "record"
         assign_url.args["timeslice_id"] = str(timeslice_id)
         assign_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
             r = requests.post(assign_url,
                             headers=self.p2fclient.base_headers)
-    def remove_timeslice(self, 
+    def remove_timeslice_record(self, 
                          timeslice_id: UUID, 
                          record_hash: str):
         """Use this to remove an assigned timeslice from a record_hash. This does not delete the timeslice. 
@@ -102,9 +102,29 @@ class harm_timeslice:
         :param record_hash: Record hash to be disassociated
         :type record_hash: str
         """
-        remove_url = self.ht_url / "remove"
+        remove_url = self.ht_url / "remove" / "record"
         remove_url.args["timeslice_id"] = str(timeslice_id)
         remove_url.args["record_hash"] = record_hash
+        if health_check(self.base_url):
+            r = requests.delete(remove_url,
+                            headers=self.p2fclient.base_headers)
+
+    def assign_timeslice_dataset(self,
+                                 timeslice_id: UUID,
+                                 dataset_id: UUID):
+        assign_url = self.ht_url / "assign" / "dataset"
+        assign_url.args["timeslice_id"] = str(timeslice_id)
+        assign_url.args["dataset_id"] = str(dataset_id)
+        if health_check(self.base_url):
+            r = requests.post(assign_url,
+                            headers=self.p2fclient.base_headers)
+
+    def remove_timeslice_dataset(self, 
+                                 timeslice_id: UUID,
+                                 dataset_id: UUID):
+        remove_url = self.ht_url / "remove" / "dataset"
+        remove_url.args["timeslice_id"] = str(timeslice_id)
+        remove_url.args["dataset_id"] = str(dataset_id)
         if health_check(self.base_url):
             r = requests.delete(remove_url,
                             headers=self.p2fclient.base_headers)

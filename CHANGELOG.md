@@ -1,5 +1,11 @@
 # CHANGELOG
 
+### v0.0.38 - 2026-10-12
+
+* Add harm_timeslice assign and remove for dataset
+* Update harm_timeslice assign and remove for record
+* Add new boolean active data flag for harm_location
+
 ### v0.0.37 - 2026-10-07
 
 * Fix a bug with UUID() object encoding and making REST API requests
