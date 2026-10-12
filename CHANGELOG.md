@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### v0.0.39 - 2026-10-12
+
+* Fix harm_location where location_identifier was not changed to location_id
+* New p2f-pydantic version
+
 ### v0.0.38 - 2026-10-12
 
 * Add harm_timeslice assign and remove for dataset

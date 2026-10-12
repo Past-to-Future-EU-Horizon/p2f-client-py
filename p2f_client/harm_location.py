@@ -75,83 +75,83 @@ class harm_location:
                             params=params,
                             headers=self.p2fclient.base_headers)
             return [HARM_Location(**x) for x in r.json()]
-    def get_harm_location(self, location_identifier: UUID) -> HARM_Location:
+    def get_harm_location(self, location_id: UUID) -> HARM_Location:
         """Retrieve an individual HARM Location by its location identifier
 
-        :param location_identifier: Location identifier from the API
-        :type location_identifier: UUID
+        :param location_id: Location identifier from the API
+        :type location_id: UUID
         :return: HARM Location from the API
         :rtype: p2f_pydantic.harm_data_metadata.HARM_Location
         """
         if health_check(self.base_url):
-            r = requests.get(self.hdl_url/str(location_identifier),
+            r = requests.get(self.hdl_url/str(location_id),
                             headers=self.p2fclient.base_headers)
             return HARM_Location(**r.json())
-    def delete_harm_location(self, location_identifier: UUID):
+    def delete_harm_location(self, location_id: UUID):
         """Delete a location from the API
 
-        :param location_identifier: location identifier from the API
-        :type location_identifier: UUID
+        :param location_id: location identifier from the API
+        :type location_id: UUID
         """
         if health_check(self.base_url):
-            r = requests.delete(self.hdl_url/str(location_identifier),
+            r = requests.delete(self.hdl_url/str(location_id),
                             headers=self.p2fclient.base_headers)
-    def assign_location_to_record(self, location_identifier: UUID, record_hash: str):
+    def assign_location_to_record(self, location_id: UUID, record_hash: str):
         """Assign a location to a record hash
 
-        :param location_identifier: location identifier from the API
-        :type location_identifier: UUID
+        :param location_id: location identifier from the API
+        :type location_id: UUID
         :param record_hash: Record hash
         :type record_hash: str
         """
-        # params = {"location_identifier": str(location_identifier),
+        # params = {"location_id": str(location_id),
         #           "record_hash": record_hash}
         assign_url = self.hdl_url / "assign-record"
-        assign_url.args["location_identifier"] = str(location_identifier)
+        assign_url.args["location_id"] = str(location_id)
         assign_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
             r = requests.post(assign_url,
                             headers=self.p2fclient.base_headers)
-    def remove_location_from_record(self, location_identifier: UUID, record_hash: str):
+    def remove_location_from_record(self, location_id: UUID, record_hash: str):
         """Remove a location assigned to a record hash
 
-        :param location_identifier: location identifier from the API
-        :type location_identifier: UUID
+        :param location_id: location identifier from the API
+        :type location_id: UUID
         :param record_hash: Record hash
         :type record_hash: str
         """
-        # params = {"location_identifier": str(location_identifier),
+        # params = {"location_id": str(location_id),
         #           "record_hash": record_hash}
         remove_url = self.hdl_url / "remove-record"
-        remove_url.args["location_identifier"] = str(location_identifier)
+        remove_url.args["location_id"] = str(location_id)
         remove_url.args["record_hash"] = record_hash
         if health_check(self.base_url):
             r = requests.post(remove_url,
                             headers=self.p2fclient.base_headers)
-    def assign_location_to_dataset(self, location_identifier: UUID, dataset_id: UUID):
+    def assign_location_to_dataset(self, location_id: UUID, dataset_id: UUID):
         """Assign a location to a dataset
 
-        :param location_identifier: Unique ID of location from server
-        :type location_identifier: UUID
+        :param location_id: Unique ID of location from server
+        :type location_id: UUID
         :param dataset_id: Unique ID of dataset from server
         :type dataset_id: UUID
         """
         assign_url = self.hdl_url / "assign-dataset"
-        assign_url.args["location_identifier"] = str(location_identifier)
+        assign_url.args["location_id"] = str(location_id)
         assign_url.args["record_hash"] = str(dataset_id)
         if health_check(self.base_url):
             r = requests.post(assign_url,
                               headers=self.p2fclient.base_headers)
-    def remove_location_from_dataset(self, location_identifier: UUID, dataset_id: UUID):
+    def remove_location_from_dataset(self, location_id: UUID, dataset_id: UUID):
         """Remove a location assigned to a dataset
 
-        :param location_identifier: Unique ID of location from server
-        :type location_identifier: UUID
+        :param location_id: Unique ID of location from server
+        :type location_id: UUID
         :param dataset_id: Unique ID of dataset from server
         :type dataset_id: UUID
         """
         remove_url = self.hdl_url / "remove-dataset"
-        remove_url.args["location_identifier"] = str(location_identifier)
+        remove_url.args["location_id"] = str(location_id)
         remove_url.args["record_hash"] = str(dataset_id)
         if health_check(self.base_url):
             r = requests.post(remove_url,
