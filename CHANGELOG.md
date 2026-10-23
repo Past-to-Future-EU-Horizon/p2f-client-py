@@ -1,5 +1,11 @@
 # CHANGELOG
 
+### v0.0.40 - 2026-10-22
+
+* Add new request filetypes to Numeric
+* Add numeric statistics endpoint
+* Update list numerics methods
+
 ### v0.0.39 - 2026-10-12
 
 * Fix harm_location where location_identifier was not changed to location_id
