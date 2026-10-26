@@ -45,7 +45,7 @@ class P2F_Client:
         :param email: email address of the client that will interact with the API, defaults to None
         :type email: Optional[str], optional
         """
-        self.version = Semantic_Version(major=0, minor=0, patch=40)
+        self.version = Semantic_Version(major=0, minor=0, patch=41)
         self.hostname = hostname
         self.port = port
         if https:
@@ -126,9 +126,3 @@ class P2F_Client:
     def set_token(self, token):
         self.auth_token = token
         self.child_class_loading()
-
-ACCEPT_DICT = {"json": "application/json",
-               "parquet": "application/vnd.apache.parquet",
-               "csv": "text/csv",
-               "pandas": "application/vnd.apache.parquet"}
-ACCEPT_LIST = ["csv", "json", "parquet", "pandas"]

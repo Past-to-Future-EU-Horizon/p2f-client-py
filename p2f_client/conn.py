@@ -35,3 +35,9 @@ def health_check(base_url: furl):
         return True
     else:
         return False
+
+ACCEPT_DICT = {"json": "application/json",
+               "parquet": "application/vnd.apache.parquet",
+               "csv": "text/csv",
+               "pandas": "application/vnd.apache.parquet"}
+ACCEPT_LIST = ["csv", "json", "parquet", "pandas"]

@@ -4,7 +4,7 @@ from p2f_pydantic.harm_data_numerical import HARM_Int, HARM_Int_Confidence
 from p2f_pydantic.harm_data_numerical import Insert_HARM_Numerical, Return_HARM_Numerical
 from p2f_pydantic.harm_data_numerical import Numerical_Table_Statistics
 from .conn import health_check
-from .p2f_client import ACCEPT_DICT, ACCEPT_LIST
+from .conn import ACCEPT_DICT, ACCEPT_LIST
 # Third Party Libraries
 import requests
 from furl import furl

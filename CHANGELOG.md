@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v0.0.41 - 2026-10-26 
+
+* Fix bug with accept list and dict
+
 ### v0.0.40 - 2026-10-22
 
 * Add new request filetypes to Numeric
