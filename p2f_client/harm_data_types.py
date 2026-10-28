@@ -36,7 +36,8 @@ class harm_data_type:
                         unit_of_measure: Optional[str]=None,
                         method: Optional[str]=None, 
                         dataset_id: Optional[UUID]=None,
-                        is_proxy: Optional[bool]=None) -> List[HARM_Data_Type]:
+                        is_proxy: Optional[bool]=None,
+                        active_datatypes: Optional[bool]=None) -> List[HARM_Data_Type]:
         """List HARM_Data_Types as seen on the API
 
         :param measure: What does the HARM_Data_Type Measure, defaults to None
@@ -54,7 +55,8 @@ class harm_data_type:
                   "unit_of_measure": unit_of_measure,
                   "method": method, 
                   "dataset_id": str(dataset_id),
-                  "is_proxy": is_proxy}
+                  "is_proxy": is_proxy,
+                  "active_datatypes": active_datatypes}
         params = {x:y for x, y in params.items() if y != None}
         if health_check(self.base_url):
             r = requests.get(self.hdt_url,

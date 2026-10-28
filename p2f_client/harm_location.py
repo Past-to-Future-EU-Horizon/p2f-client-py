@@ -40,6 +40,8 @@ class harm_location:
                             min_location_age: Optional[float]=None,
                             max_location_age: Optional[float]=None, 
                             dataset_id: Optional[UUID]=None,
+                            datatype_id: Optional[UUID]=None, 
+                            record_hash: Optional[str]=None, 
                             active_locations: Optional[bool] = None,) -> List[HARM_Location]:
         """A list of locations based on the filters provided. 
 
@@ -67,6 +69,8 @@ class harm_location:
             "min_location_age": min_location_age,
             "max_location_age": max_location_age,
             "dataset_id": dataset_id,
+            "datatype_id": datatype_id,
+            "record_hash": record_hash,
             "active_locations": active_locations,
             }
         params = {x: y for x, y in params.items() if y != None}

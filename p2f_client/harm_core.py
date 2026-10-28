@@ -6,7 +6,7 @@ import requests
 from furl import furl
 # Batteries included libraries
 from uuid import UUID
-from typing import Optional, List
+from typing import Optional, List, Literal
 
 class harm_core:
     def __init__(self, p2fclient):
@@ -47,17 +47,39 @@ class harm_core:
                               data=new_core_segment.model_dump_json(exclude_unset=True),
                               headers=self.p2fclient.base_headers)
             return CoreSegment(**r.json())
-    def list_cores(self) -> List[Core]:
+    def list_cores(self,
+                   dataset_id: UUID | None = None,
+                   record_hash: str | None = None,
+                   active_core: bool | None = None, 
+                   location_id: UUID | None = None,
+                   datatype_id: UUID | None = None, 
+                   core_type: Literal["ice", "sediment", "other"] | None = None,) -> List[Core]:
         """Get all of the HARM Cores on the server
 
         :return: List of HARM Core objects
         :rtype: List[Core]
         """
+        params = {
+            "dataset_id": dataset_id,
+            "record_hash": record_hash,
+            "active_core": active_core,
+            "location_id": location_id,
+            "datatype_id": datatype_id,
+            "core_type": core_type
+        }
+        params = {x:y for x, y in params.items() if y is not None}
         if health_check(self.base_url):
             r = requests.get(self.core_url, 
-                             headers=self.p2fclient.base_headers)
+                             headers=self.p2fclient.base_headers,
+                             params=params)
             return [Core(**x) for x in r.json()]
-    def list_core_segments(self, core_id: UUID | None = None) -> List[CoreSegment]:
+    def list_core_segments(self, \
+                           core_id: UUID | None = None,
+                           dataset_id: UUID | None = None, 
+                           record_hash: str | None = None, 
+                           location_id: UUID | None = None,
+                           datatype_id: UUID | None = None,
+                           active_segments: bool | None = None,) -> List[CoreSegment]:
         """List HARM Core Segments for a HARM Core
 
         :param core_id: core_id of the parent HARM Core, defaults to None
@@ -65,6 +87,14 @@ class harm_core:
         :return: List of HARM Core Segments for HARM Core
         :rtype: List[CoreSegment]
         """
+        params = {
+            "dataset_id": dataset_id,
+            "record_hash": record_hash,
+            "location_id": location_id,
+            "datatype_id": datatype_id,
+            "active_segments": active_segments
+        }
+        params = {x: y for x, y in params.items()}
         if health_check(self.base_url):
             segment_url = self.core_url / str(core_id) / "segment"
             r = requests.get(segment_url,

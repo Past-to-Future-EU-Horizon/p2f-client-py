@@ -1,5 +1,11 @@
 # CHANGELOG
 
+### v0.0.42 - 2026-10-28
+
+* Add more options to harm data types for better filtering
+* Add more options to harm location for better filtering
+* Add more options to harm core and core segment for better filtering
+
 ### v0.0.41 - 2026-10-26 
 
 * Fix bug with accept list and dict
