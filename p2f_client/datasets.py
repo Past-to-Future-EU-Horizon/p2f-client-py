@@ -71,7 +71,8 @@ class datasets:
         params = {x: y for x, y in params.items() if y is not None}
         if health_check(self.base_url):
             r = requests.get(self.dataset_url,
-                            headers=self.p2fclient.base_headers)
+                            headers=self.p2fclient.base_headers,
+                            params=params)
             # self.datasets = [Datasets(**x) for x in r.json()]
             return [Datasets(**x) for x in r.json()]
     def get_remote_dataset(self, dataset_id: UUID | str):
