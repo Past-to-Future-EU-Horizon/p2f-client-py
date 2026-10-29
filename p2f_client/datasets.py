@@ -34,7 +34,11 @@ class datasets:
     def list_remote_datasets(self, 
                              is_new_p2f: Optional[bool]=None,
                              is_sub_dataset: Optional[bool]=None,
-                             doi: Optional[str]=None) -> List[Datasets]:
+                             doi: Optional[str]=None,
+                             location_id: Optional[UUID]=None,
+                             datatype_id: Optional[UUID]=None,
+                             core_id: Optional[UUID]=None, 
+                             core_segment_id: Optional[UUID]=None) -> List[Datasets]:
         """List datasets from the API
 
         :param is_new_p2f: If the dataset is original to the P2F project (True) or 
@@ -47,19 +51,26 @@ class datasets:
         :return: _description_
         :rtype: List[Datasets]
         """
-        list_url = self.dataset_url
-        # data = {}
-        if is_new_p2f is not None:
-            list_url.args["is_new_p2f"] = is_new_p2f
-            # data["is_new_p2f"] = is_new_p2f
-        if is_sub_dataset is not None:
-            list_url.args["is_sub_dataset"] = is_sub_dataset
-            # data["is_sub_dataset"] = is_sub_dataset
-        if doi is not None:
-            list_url.args["doi"] = doi
-            # data["doi"] = doi
+        if location_id is not None:
+            location_id = str(location_id)
+        if datatype_id is not None: 
+            datatype_id = str(datatype_id)
+        if core_id is not None:
+            core_id = str(core_id)
+        if core_segment_id is not None:
+            core_segment_id = str(core_segment_id)
+        params = {
+            "is_new_p2f": is_new_p2f,
+            "is_sub_dataset": is_sub_dataset,
+            "doi": doi,
+            "location_id": location_id,
+            "datatype_id": datatype_id,
+            "core_id": core_id,
+            "core_segment_id": core_segment_id
+        }
+        params = {x: y for x, y in params.items() if y is not None}
         if health_check(self.base_url):
-            r = requests.get(list_url,
+            r = requests.get(self.dataset_url,
                             headers=self.p2fclient.base_headers)
             # self.datasets = [Datasets(**x) for x in r.json()]
             return [Datasets(**x) for x in r.json()]

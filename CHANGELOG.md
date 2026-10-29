@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v0.0.44 - 2026-10-29
+
+* add new filter parameters to dataset list
+
 ### v0.0.43 - 2026-10-29
 
 * Fix issue with UUID to String conversion
