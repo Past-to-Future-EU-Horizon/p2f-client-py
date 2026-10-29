@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v0.0.46 - 2026-10-29
+
+* Add location_id filter to datatypes
+
 ### v0.0.44 - 2026-10-29
 
 * add new filter parameters to dataset list

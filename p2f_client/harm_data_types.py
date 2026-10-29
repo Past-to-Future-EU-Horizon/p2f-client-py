@@ -36,6 +36,7 @@ class harm_data_type:
                         unit_of_measure: Optional[str]=None,
                         method: Optional[str]=None, 
                         dataset_id: Optional[UUID]=None,
+                        location_id: Optional[UUID]=None,
                         is_proxy: Optional[bool]=None,
                         active_datatypes: Optional[bool]=None) -> List[HARM_Data_Type]:
         """List HARM_Data_Types as seen on the API
@@ -53,10 +54,13 @@ class harm_data_type:
         """
         if dataset_id is not None:
             dataset_id = str(dataset_id)
+        if location_id is not None:
+            location_id = str(location_id)
         params = {"measure": measure,
                   "unit_of_measure": unit_of_measure,
                   "method": method, 
                   "dataset_id": dataset_id,
+                  "location_id": location_id,
                   "is_proxy": is_proxy,
                   "active_datatypes": active_datatypes}
         params = {x:y for x, y in params.items() if y != None}
