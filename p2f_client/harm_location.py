@@ -60,6 +60,10 @@ class harm_location:
         :return: List of HARM Locations 
         :rtype: p2f_pydantic.harm_data_metadata.HARM_Location
         """
+        if dataset_id is not None:
+            dataset_id = str(dataset_id)
+        if datatype_id is not None:
+            datatype_id = str(datatype_id)
         params = {
             "bounding_box": bounding_box,
             "location_name": location_name,

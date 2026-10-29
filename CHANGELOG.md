@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v0.0.43 - 2026-10-29
+
+* Fix issue with UUID to String conversion
+
 ### v0.0.42 - 2026-10-28
 
 * Add more options to harm data types for better filtering

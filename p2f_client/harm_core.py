@@ -59,6 +59,12 @@ class harm_core:
         :return: List of HARM Core objects
         :rtype: List[Core]
         """
+        if dataset_id is not None:
+            dataset_id = str(dataset_id)
+        if location_id is not None:
+            location_id = str(location_id)
+        if datatype_id is not None:
+            datatype_id = str(datatype_id)
         params = {
             "dataset_id": dataset_id,
             "record_hash": record_hash,
@@ -87,6 +93,14 @@ class harm_core:
         :return: List of HARM Core Segments for HARM Core
         :rtype: List[CoreSegment]
         """
+        if core_id is not None:
+            core_id = str(core_id)
+        if dataset_id is not None:
+            dataset_id = str(dataset_id)
+        if location_id is not None:
+            location_id = str(location_id)
+        if datatype_id is not None:
+            datatype_id = str(datatype_id)
         params = {
             "dataset_id": dataset_id,
             "record_hash": record_hash,
@@ -96,11 +110,11 @@ class harm_core:
         }
         params = {x: y for x, y in params.items()}
         if health_check(self.base_url):
-            segment_url = self.core_url / str(core_id) / "segment"
+            segment_url = self.core_url / core_id / "segment"
             r = requests.get(segment_url,
                              headers=self.p2fclient.base_headers)
             return [CoreSegment(**x) for x in r.json()]
-    def get_core(self, core_id: UUID | None = None) -> Core:
+    def get_core(self, core_id: UUID) -> Core:
         """Get an individual HARM Core from the server
 
         :param core_id: core_id of the desired HARM Core, defaults to None

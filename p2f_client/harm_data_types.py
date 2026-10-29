@@ -51,10 +51,12 @@ class harm_data_type:
         :return: List of HARM_Data_Types that were retrieved
         :rtype: List[p2f_pydantic.harm_data_types.HARM_Data_Type]
         """
+        if dataset_id is not None:
+            dataset_id = str(dataset_id)
         params = {"measure": measure,
                   "unit_of_measure": unit_of_measure,
                   "method": method, 
-                  "dataset_id": str(dataset_id),
+                  "dataset_id": dataset_id,
                   "is_proxy": is_proxy,
                   "active_datatypes": active_datatypes}
         params = {x:y for x, y in params.items() if y != None}
