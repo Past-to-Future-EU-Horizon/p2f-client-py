@@ -45,9 +45,24 @@ class harm_numerical:
                                                         "int"]]=None, 
                              datatype_id: Optional[UUID]=None, 
                              dataset_id: Optional[UUID]=None,
+                             location_id: Optional[UUID]=None,
+                             core_id: Optional[UUID] = None,
+                             core_segment_id: Optional[UUID] = None,
                              request_as: Optional[Literal[ACCEPT_LIST]] = "pandas") -> Return_HARM_Numerical:
+        if datatype_id is not None:
+            datatype_id = str(datatype_id)
+        if dataset_id is not None:
+            dataset_id = str(dataset_id)
+        if location_id is not None:
+            location_id = str(location_id)
+        if core_id is not None:
+            core_id = str(core_id)
+        if core_segment_id is not None:
+            core_segment_id = str(core_segment_id)
         if numeric_type == None:
-            remote_stats = self.get_numeric_statistics(dataset_id=dataset_id, datatype_id=datatype_id)
+            remote_stats = self.get_numeric_statistics(dataset_id=dataset_id, 
+                                                       datatype_id=datatype_id, 
+                                                       location_id=location_id)
             request_tables = [x.replace("count_", "") for x,y  in remote_stats.model_dump(exclude_unset=True, exclude={"count_total"}).items() if y > 0]
         else:
             request_tables = [numeric_type]
@@ -57,7 +72,10 @@ class harm_numerical:
                 "record_hash": record_hash,
                 "numeric_type": numtype,
                 "datatype_id": datatype_id,
-                "dataset_id": dataset_id
+                "dataset_id": dataset_id,
+                "location_id": location_id,
+                "core_id": core_id,
+                "core_segment_id": core_segment_id
             }
             params = {x:y for x, y in params.items() if y != None}
             headers = self.p2fclient.base_headers
@@ -106,10 +124,30 @@ class harm_numerical:
                 rv = HARM_Float_Confidence(**incoming_json)
         return rv
     def get_numeric_statistics(self,
+                               record_hash: Optional[str]=None, 
                                datatype_id: Optional[UUID]=None, 
-                               dataset_id: Optional[UUID]=None,) -> Numerical_Table_Statistics:
-        params = {"datatype_id": datatype_id,
-                  "dataset_id": dataset_id}
+                               dataset_id: Optional[UUID]=None,
+                               location_id: Optional[UUID]=None,
+                               core_id: Optional[UUID]=None, 
+                               core_segment_id: Optional[UUID]=None) -> Numerical_Table_Statistics:
+        if datatype_id is not None:
+            datatype_id = str(datatype_id)
+        if dataset_id is not None:
+            dataset_id = str(dataset_id)
+        if location_id is not None:
+            location_id = str(location_id)
+        if core_id is not None:
+            core_id = str(core_id)
+        if core_segment_id is not None:
+            core_segment_id = str(core_segment_id)
+        params = {
+            "record_hash": record_hash,
+            "datatype_id": datatype_id,
+            "dataset_id": dataset_id,
+            "location_id": location_id,
+            "core_id": core_id,
+            "core_segment_id": core_segment_id
+            }
         params = {x: y for x, y in params.items() if y is not None}
         headers = self.p2fclient.base_headers
         statistics_url = self.hdn_url / "statistics"

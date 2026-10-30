@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v0.0.47 - 2026-10-30
+
+* Add more filters to harm_numerical
+
 ### v0.0.46 - 2026-10-29
 
 * Add location_id filter to datatypes
