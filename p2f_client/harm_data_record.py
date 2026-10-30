@@ -34,8 +34,11 @@ class harm_data_records:
                               headers=self.p2fclient.base_headers)
             return HARM_Data_Record(**r.json())
     def list_remote_records(self, 
-                            dataset: Optional[str]=None,
-                            data_type: Optional[str]=None):
+                            dataset_id: Optional[UUID]=None,
+                            datatype_id: Optional[UUID]=None,
+                            location_id: Optional[UUID]=None, 
+                            core_id: Optional[UUID]=None, 
+                            core_segment_id: Optional[UUID]=None):
         """List data records on the API. 
 
         :param dataset: Filter by dataset_id, defaults to None
@@ -45,8 +48,21 @@ class harm_data_records:
         :return: List of HARM_Data_Records found with the query
         :rtype: List[HARM_Data_Record]
         """
-        params = {"dataset": dataset,
-                  "data_type": data_type}
+        if dataset_id is not None:
+            dataset_id = str(dataset_id)
+        if datatype_id is not None:
+            datatype_id = str(datatype_id)
+        if location_id is not None:
+            location_id = str(location_id)
+        if core_id is not None:
+            core_id = str(core_id)
+        if core_segment_id is not None:
+            core_segment_id = str(core_segment_id)
+        params = {"dataset_id": dataset_id,
+                  "datatype_id": datatype_id,
+                  "location_id": location_id,
+                  "core_id": core_id,
+                  "core_segment_id": core_segment_id}
         params = {x:y for x, y in params.items() if y != None}
         if health_check(self.base_url):
             r = requests.get(self.hdr_url,

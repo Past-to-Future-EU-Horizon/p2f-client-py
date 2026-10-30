@@ -1,5 +1,11 @@
 # CHANGELOG
 
+### v0.0.48 - 2026-10-30
+
+* Add dataset_id filter to harm_age
+* Add dataset_id, datatype_id, record_hash, and location_id filters to harm_reference
+* Add dataset_id, datatype_id, record_hash, core_id, and core_segment_id filters to harm_data_record
+
 ### v0.0.47 - 2026-10-30
 
 * Add more filters to harm_numerical

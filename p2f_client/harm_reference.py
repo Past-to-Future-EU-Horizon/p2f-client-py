@@ -30,7 +30,11 @@ class harm_reference:
                             headers=self.p2fclient.base_headers)
             if r.ok:
                 return (HARM_Reference(**r.json()))
-    def list_harm_references(self) -> List[HARM_Reference]:
+    def list_harm_references(self,
+                             dataset_id: UUID | None = None, 
+                             record_hash: str | None = None, 
+                             datatype_id: UUID | None = None, 
+                             location_id: UUID | None = None) -> List[HARM_Reference]:
         """List references that exist on the API. 
 
         In the future this function will have search parameters such as dataset_id and record_hash. 
@@ -38,9 +42,23 @@ class harm_reference:
         :return: A list of references from the API
         :rtype: List[p2f_pydantic.harm_reference.HARM_Reference]
         """
+        if dataset_id is not None:
+            dataset_id = str(dataset_id)
+        if datatype_id is not None:
+            datatype_id = str(datatype_id)
+        if location_id is not None:
+            location_id = str(location_id)
+        params = {
+            "dataset_id": dataset_id,
+            "datatype_id": datatype_id,
+            "location_id": location_id,
+            "record_hash": record_hash
+        }
+        params = {x: y for x,y in params.items() if y is not None}
         if health_check(self.base_url):
             r = requests.get(self.hr_url,
-                            headers=self.p2fclient.base_headers)
+                            headers=self.p2fclient.base_headers,
+                            params=params)
             if r.ok:
                 return [HARM_Reference(**x) for x in r.json()]
             else:

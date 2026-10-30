@@ -31,11 +31,16 @@ class harm_age:
                 return HARM_Rec_Age(**r.json())
     def list_harm_ages(self, 
                        older_year: Optional[int] = None, 
-                       recent_year: Optional[int] = None) -> List[HARM_Rec_Age]:
+                       recent_year: Optional[int] = None,
+                       dataset_id: Optional[UUID] = None,) -> List[HARM_Rec_Age]:
+        if dataset_id is not None: 
+            dataset_id = str(dataset_id)
         params = {
             "recent_year_search": recent_year,
-            "older_year_search": older_year
+            "older_year_search": older_year,
+            "dataset_id": dataset_id
         }
+        params = {x: y for x, y in params if y is not None}
         if health_check(self.base_url):
             r = requests.get(self.hda_url, 
                              headers=self.p2fclient.base_headers,
