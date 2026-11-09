@@ -6,35 +6,42 @@ from furl import furl
 ###   making a decorator function to probe the health-check
 ###   endpoint first, opening the connection to the API. 
 
-def health_probe(base_url):
-    """An untested decorator for performing a health check before making an API call"""
-    def health_probe_func_level(func):
-        base_url = furl(base_url)
-        prefix = "health-check"
-        healthcheckurl = base_url / f"{prefix}/"
-        r = requests.get(healthcheckurl)
-        if r.ok:
-            # Run the decorated function
-            def innerfunc(*args, **kwargs):
-                return func(*args, **kwargs)
-            return innerfunc
-        else:
-            # Due to above commented issue, if we can't get a GET, then raise an error
-            raise requests.exceptions.HTTPError("The client could not connect to the API server.")
-    return health_probe_func_level
+# def health_probe(base_url):
+#     """An untested decorator for performing a health check before making an API call"""
+#     def health_probe_func_level(func):
+#         base_url = furl(base_url)
+#         prefix = "health-check"
+#         healthcheckurl = base_url / f"{prefix}/"
+#         r = requests.get(healthcheckurl)
+#         if r.ok:
+#             # Run the decorated function
+#             def innerfunc(*args, **kwargs):
+#                 return func(*args, **kwargs)
+#             return innerfunc
+#         else:
+#             # Due to above commented issue, if we can't get a GET, then raise an error
+#             raise requests.exceptions.HTTPError("The client could not connect to the API server.")
+#     return health_probe_func_level
 
-def health_check(base_url: furl):
-    """A basic function that is called to make sure the API is running. This is also
-        important due to an issue with v0.0 API and the Ingress controller not sending
-        data from the client to the API without an open connection. Using this function
-        will open a connection that can be used for POST and PUT requests."""
-    prefix = "health-check"
-    healthcheck_url = base_url / f"{prefix}/"
-    r = requests.get(healthcheck_url)
-    if r.ok:
-        return True
-    else:
-        return False
+# def health_check(base_url: furl):
+#     """A basic function that is called to make sure the API is running. This is also
+#         important due to an issue with v0.0 API and the Ingress controller not sending
+#         data from the client to the API without an open connection. Using this function
+#         will open a connection that can be used for POST and PUT requests."""
+#     prefix = "health-check"
+#     healthcheck_url = base_url / f"{prefix}/"
+#     r = requests.get(healthcheck_url)
+#     if r.ok:
+#         return True
+#     else:
+#         return False
+
+# def eval_non_ok_return(return_code):
+#     """Returns False for stop, True for try again"""
+#     if return_code >= 400 and return_code < 500:
+#         return True
+#     elif return_code >= 500 and return_code < 600:
+#         return False
 
 ACCEPT_DICT = {"json": "application/json",
                "parquet": "application/vnd.apache.parquet",

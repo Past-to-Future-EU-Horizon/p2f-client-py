@@ -1,5 +1,13 @@
 # CHANGELOG
 
+### v0.0.50 - 2026-11-09
+
+* Update the way requests are made to use a session with automatic retries. 
+* Move the health-check into the parent client object. 
+* Move base headers setting to parent client object. 
+* Add integration tests
+* Add docker dependency to dev pyproject.toml
+
 ### v0.0.48 - 2026-10-30
 
 * Add dataset_id filter to harm_age

@@ -1,9 +1,6 @@
 # Local libraries
 from p2f_pydantic.datasets import Datasets
-from .conn import health_check
 # Third Party Libraries
-import requests
-from furl import furl
 # Batteries included libraries
 from uuid import UUID
 from typing import Optional, List
@@ -26,11 +23,11 @@ class datasets:
         :return: Dataset as ingested by the API
         :rtype: p2f_pydantic.datasets.Datasets
         """
-        if health_check(self.base_url):
-            r = requests.post(self.dataset_url,
-                              data=dataset.model_dump_json(exclude_unset=True),
-                              headers=self.p2fclient.base_headers)
-            return Datasets(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(self.dataset_url,
+                                 data=dataset.model_dump_json(exclude_unset=True))
+                return Datasets(**r.json())
     def list_remote_datasets(self, 
                              is_new_p2f: Optional[bool]=None,
                              is_sub_dataset: Optional[bool]=None,
@@ -69,12 +66,12 @@ class datasets:
             "core_segment_id": core_segment_id
         }
         params = {x: y for x, y in params.items() if y is not None}
-        if health_check(self.base_url):
-            r = requests.get(self.dataset_url,
-                            headers=self.p2fclient.base_headers,
-                            params=params)
-            # self.datasets = [Datasets(**x) for x in r.json()]
-            return [Datasets(**x) for x in r.json()]
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.get(self.dataset_url,
+                                params=params)
+                # self.datasets = [Datasets(**x) for x in r.json()]
+                return [Datasets(**x) for x in r.json()]
     def get_remote_dataset(self, dataset_id: UUID | str):
         """Get a single dataset record by the dataset ID
         
@@ -84,10 +81,10 @@ class datasets:
             Dataset ID of a single dataset to retrieve
         """
         get_url = self.dataset_url / str(dataset_id)
-        if health_check(self.base_url):
-            r = requests.get(get_url,
-                            headers=self.p2fclient.base_headers)
-            return Datasets(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.get(get_url)
+                return Datasets(**r.json())
     def delete_remote_dataset(self, dataset_id: UUID | str):
         """Delete a single dataset record by the dataset ID
         
@@ -97,6 +94,6 @@ class datasets:
             Dataset ID of a single dataset to delete
         """
         delete_url = self.dataset_url / str(dataset_id)
-        if health_check(self.base_url):
-            r = requests.delete(delete_url,
-                            headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.delete(delete_url)

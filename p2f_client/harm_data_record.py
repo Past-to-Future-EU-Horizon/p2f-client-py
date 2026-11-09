@@ -1,9 +1,6 @@
 # Local libraries
 from p2f_pydantic.harm_data_record import HARM_Data_Record
-from .conn import health_check
 # Third Party Libraries
-import requests
-from furl import furl
 # Batteries included libraries
 from uuid import UUID
 from typing import Optional, List
@@ -28,11 +25,11 @@ class harm_data_records:
         :return: The object as uploaded to the API
         :rtype: p2f-pydantic.harm_data_record.HARM_Data_Record
         """
-        if health_check(self.base_url):
-            r = requests.post(self.hdr_url,
-                              data=data_record.model_dump_json(exclude_unset=True),
-                              headers=self.p2fclient.base_headers)
-            return HARM_Data_Record(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(self.hdr_url,
+                                data=data_record.model_dump_json(exclude_unset=True))
+                return HARM_Data_Record(**r.json())
     def list_remote_records(self, 
                             dataset_id: Optional[UUID]=None,
                             datatype_id: Optional[UUID]=None,
@@ -64,11 +61,11 @@ class harm_data_records:
                   "core_id": core_id,
                   "core_segment_id": core_segment_id}
         params = {x:y for x, y in params.items() if y != None}
-        if health_check(self.base_url):
-            r = requests.get(self.hdr_url,
-                             params=params,
-                             headers=self.p2fclient.base_headers)
-            return [HARM_Data_Record(**x) for x in r.json()]
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.get(self.hdr_url,
+                                params=params)
+                return [HARM_Data_Record(**x) for x in r.json()]
     def get_remote_record(self, record_hash: str):
         """Get an individual HARM_Data_Record by record_hash
 
@@ -77,19 +74,19 @@ class harm_data_records:
         :return: HARM_Data_Record
         :rtype: p2f-pydantic.harm_data_record.HARM_Data_Record
         """
-        if health_check(self.base_url):
-            r = requests.get(self.hdr_url / record_hash,
-                             headers=self.p2fclient.base_headers)
-            return HARM_Data_Record(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.get(self.hdr_url / record_hash)
+                return HARM_Data_Record(**r.json())
     def delete_remote_dataset(self, record_hash: str):
         """Delete a HARM_Data_Record by the record hash from the API
 
         :param record_hash: record_hash of the HARM_Data_Record on the API
         :type record_hash: str
         """
-        if health_check(self.base_url):
-            r = requests.delete(self.hdr_url / record_hash,
-                                headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.delete(self.hdr_url / record_hash)
     def calculate_hash(self, dataset_id: str, row_number: int, debugging=False):
         """Utility function for calculating a repeatable hash for the API
 

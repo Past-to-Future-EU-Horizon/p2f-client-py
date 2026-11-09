@@ -1,9 +1,6 @@
 # Local libraries
 from p2f_pydantic.harm_data_types import HARM_Data_Type
-from .conn import health_check
 # Third Party Libraries
-import requests
-from furl import furl
 # Batteries included libraries
 from uuid import UUID
 from typing import Optional, List
@@ -26,11 +23,11 @@ class harm_data_type:
         :return: HARM_Data_Type as processed by the API
         :rtype: p2f_pydantic.harm_data_types.HARM_Data_Type
         """
-        if health_check(self.base_url):
-            r = requests.post(self.hdt_url, 
-                              data=new_data_type.model_dump_json(exclude_unset=True),
-                              headers=self.p2fclient.base_headers)
-            return HARM_Data_Type(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(self.hdt_url, 
+                                data=new_data_type.model_dump_json(exclude_unset=True))
+                return HARM_Data_Type(**r.json())
     def list_data_types(self, 
                         measure: Optional[str]=None,
                         unit_of_measure: Optional[str]=None,
@@ -64,11 +61,11 @@ class harm_data_type:
                   "is_proxy": is_proxy,
                   "active_datatypes": active_datatypes}
         params = {x:y for x, y in params.items() if y != None}
-        if health_check(self.base_url):
-            r = requests.get(self.hdt_url,
-                            params=params, 
-                            headers=self.p2fclient.base_headers)
-            return [HARM_Data_Type(**x) for x in r.json()]
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.get(self.hdt_url,
+                                params=params)
+                return [HARM_Data_Type(**x) for x in r.json()]
     def get_data_type(self, datatype_id: UUID) -> HARM_Data_Type:
         """Get an individual data type by the datatype_id
 
@@ -77,30 +74,30 @@ class harm_data_type:
         :return: Retrieved HARM_Data_Type from API
         :rtype: p2f_pydantic.harm_data_types.HARM_Data_Type
         """
-        if health_check(self.base_url):
-            r = requests.get(self.hdt_url / str(datatype_id),
-                             headers=self.p2fclient.base_headers)
-            return HARM_Data_Type(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.get(self.hdt_url / str(datatype_id))
+                return HARM_Data_Type(**r.json())
     def delete_data_type(self, datatype_id: UUID):
         """Delete a datatype from the API endpoint. 
 
         :param datatype_id: The datatype ID that you want to delete
         :type datatype_id: UUID
         """
-        if health_check(self.base_url):
-            r = requests.delete(self.hdt_url / str(datatype_id),
-                                headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.delete(self.hdt_url / str(datatype_id))
     def assign_data_type_to_dataset(self, 
                                     datatype_id: UUID, 
                                     dataset_id: UUID):
-        if health_check(self.base_url):
-            assign_url = self.hdt_url / str(datatype_id) / "assign" / str(dataset_id)
-            r = requests.post(assign_url,
-                              headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                assign_url = self.hdt_url / str(datatype_id) / "assign" / str(dataset_id)
+                r = session.post(assign_url)
     def remove_data_type_from_dataset(self,
                                       datatype_id: UUID, 
                                       dataset_id: UUID):
-        if health_check(self.base_url):
-            remove_url = self.hdt_url / str(datatype_id) / "remove" / str(dataset_id)
-            r = requests.delete(remove_url,
-                                headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                remove_url = self.hdt_url / str(datatype_id) / "remove" / str(dataset_id)
+                r = session.delete(remove_url)

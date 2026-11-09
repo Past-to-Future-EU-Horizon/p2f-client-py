@@ -1,8 +1,6 @@
 # Local libraries
 from p2f_pydantic.harm_timeslices import HARM_Timeslice
-from .conn import health_check
 # Third Party Libraries
-import requests
 # Batteries included libraries
 from uuid import UUID
 from typing import Optional, List
@@ -24,11 +22,11 @@ class harm_timeslice:
         :return: HARM_Timeslice as processed by the API
         :rtype: p2f_pydantic.harm_timeslices.HARM_Timeslice
         """
-        if health_check(self.base_url):
-            r = requests.post(self.ht_url, 
-                              data=new_timeslice.model_dump_json(exclude_unset=True),
-                              headers=self.p2fclient.base_headers)
-            return HARM_Timeslice(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(self.ht_url, 
+                                data=new_timeslice.model_dump_json(exclude_unset=True))
+                return HARM_Timeslice(**r.json())
     def list_timeslices(self,
                         named_time_period: Optional[str]=None, 
                         older_search_age: Optional[int]=None,
@@ -48,11 +46,11 @@ class harm_timeslice:
                   "older_search_age": older_search_age,
                   "recent_search_age": recent_search_age}
         params = {x: y for x, y in params.items() if y != None}
-        if health_check(self.base_url):
-            r = requests.get(self.ht_url, 
-                            params=params,
-                            headers=self.p2fclient.base_headers)
-            return [HARM_Timeslice(**x) for x in r.json()]
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.get(self.ht_url, 
+                                params=params)
+                return [HARM_Timeslice(**x) for x in r.json()]
     def get_timeslice(self, 
                       timeslice_id: UUID) -> HARM_Timeslice:
         """Get an individual timeslice by its timeslice_id
@@ -62,10 +60,10 @@ class harm_timeslice:
         :return: retrieved timeslice from API
         :rtype: p2f_pydantic.harm_timeslices.HARM_Timeslice
         """
-        if health_check(self.base_url):
-            r = requests.get(self.ht_url / str(timeslice_id),
-                            headers=self.p2fclient.base_headers)
-            return HARM_Timeslice(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.get(self.ht_url / str(timeslice_id))
+                return HARM_Timeslice(**r.json())
     def delete_timeslice(self, 
                          timeslice_id: UUID):
         """Delete a timeslice from the API
@@ -73,9 +71,9 @@ class harm_timeslice:
         :param timeslice_id: timeslice_id from API
         :type timeslice_id: UUID
         """
-        if health_check(self.base_url):
-            r = requests.delete(self.ht_url / str(timeslice_id),
-                            headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.delete(self.ht_url / str(timeslice_id))
     def assign_timeslice_record(self, 
                          timeslice_id: UUID, 
                          record_hash: str):
@@ -89,9 +87,9 @@ class harm_timeslice:
         assign_url = self.ht_url / "assign" / "record"
         assign_url.args["timeslice_id"] = str(timeslice_id)
         assign_url.args["record_hash"] = record_hash
-        if health_check(self.base_url):
-            r = requests.post(assign_url,
-                            headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(assign_url)
     def remove_timeslice_record(self, 
                          timeslice_id: UUID, 
                          record_hash: str):
@@ -105,9 +103,9 @@ class harm_timeslice:
         remove_url = self.ht_url / "remove" / "record"
         remove_url.args["timeslice_id"] = str(timeslice_id)
         remove_url.args["record_hash"] = record_hash
-        if health_check(self.base_url):
-            r = requests.delete(remove_url,
-                            headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.delete(remove_url)
 
     def assign_timeslice_dataset(self,
                                  timeslice_id: UUID,
@@ -115,9 +113,9 @@ class harm_timeslice:
         assign_url = self.ht_url / "assign" / "dataset"
         assign_url.args["timeslice_id"] = str(timeslice_id)
         assign_url.args["dataset_id"] = str(dataset_id)
-        if health_check(self.base_url):
-            r = requests.post(assign_url,
-                            headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(assign_url)
 
     def remove_timeslice_dataset(self, 
                                  timeslice_id: UUID,
@@ -125,6 +123,6 @@ class harm_timeslice:
         remove_url = self.ht_url / "remove" / "dataset"
         remove_url.args["timeslice_id"] = str(timeslice_id)
         remove_url.args["dataset_id"] = str(dataset_id)
-        if health_check(self.base_url):
-            r = requests.delete(remove_url,
-                            headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.delete(remove_url)

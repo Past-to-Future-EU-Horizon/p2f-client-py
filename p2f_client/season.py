@@ -1,8 +1,6 @@
 # Local libraries
 from p2f_pydantic.seasonality import Season
-from .conn import health_check
 # Third Party Libraries
-import requests
 # Batteries included libraries
 from uuid import UUID
 from typing import Optional, List
@@ -18,21 +16,21 @@ class season:
     def add_season(self, 
                    record_hash: str, 
                    new_season: Season):
-        if health_check(self.base_url):
-            local_url = self.season_url / record_hash
-            r = requests.post(local_url, 
-                              headers=self.p2fclient.base_headers, 
-                              data=new_season.model_dump_json(exclude_unset=True))
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                local_url = self.season_url / record_hash
+                r = session.post(local_url, 
+                                data=new_season.model_dump_json(exclude_unset=True))
     def get_season(self, 
                    record_hash: str) -> Season:
-        if health_check(self.base_url):
-            local_url = self.season_url / record_hash
-            r = requests.get(local_url, 
-                             headers=self.p2fclient.base_headers)
-            return Season(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                local_url = self.season_url / record_hash
+                r = session.get(local_url)
+                return Season(**r.json())
     def delete_season(self, 
                    record_hash: str):
-        if health_check(self.base_url):
-            local_url = self.season_url / record_hash
-            r = requests.delete(local_url, 
-                                headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                local_url = self.season_url / record_hash
+                r = session.delete(local_url)

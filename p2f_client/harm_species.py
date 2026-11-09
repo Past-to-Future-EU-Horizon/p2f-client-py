@@ -1,8 +1,6 @@
 # Local libraries
 from p2f_pydantic.harm_species import HARM_Species
-from .conn import health_check
 # Third Party Libraries
-import requests
 # Batteries included libraries
 from typing import Optional, List
 from uuid import UUID
@@ -24,11 +22,11 @@ class harm_species:
         :return: The new species object as processed by the API
         :rtype: p2f_pydantic.harm_data_metadata.HARM_Data_Species
         """
-        if health_check(self.base_url):
-            r = requests.post(self.hds_url, 
-                              data=new_species.model_dump_json(exclude_unset=True),
-                              headers=self.p2fclient.base_headers)
-            return HARM_Species(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(self.hds_url, 
+                                data=new_species.model_dump_json(exclude_unset=True))
+                return HARM_Species(**r.json())
     def list_harm_species(self, 
                           tax_domain: Optional[str]=None,
                           tax_kingdom: Optional[str]=None,
@@ -64,11 +62,11 @@ class harm_species:
         params["common_name"] = common_name
         params["display_species"] = display_species
         params = {x: y for x, y in params.items() if y != None}
-        if health_check(self.base_url):
-            r = requests.get(self.hds_url, 
-                            params=params,
-                            headers=self.p2fclient.base_headers)
-            return [HARM_Species(**x) for x in r.json()]
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.get(self.hds_url, 
+                                params=params)
+                return [HARM_Species(**x) for x in r.json()]
     def get_harm_species(self, species_identifier: UUID) -> HARM_Species:
         """Get an individual harm species based on the API species id
 
@@ -77,19 +75,19 @@ class harm_species:
         :return: The species as retrieved from the API 
         :rtype: p2f_pydantic.harm_data_metadata.HARM_Data_Species
         """
-        if health_check(self.base_url):
-            r = requests.get(self.hds_url/str(species_identifier),
-                            headers=self.p2fclient.base_headers)
-            return HARM_Species(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.get(self.hds_url/str(species_identifier))
+                return HARM_Species(**r.json())
     def delete_harm_species(self, species_identifier: UUID):
         """Delete a species from the P2F API
 
         :param species_identifier: species identifier from the API
         :type species_identifier: UUID
         """
-        if health_check(self.base_url):
-            r = requests.delete(self.hds_url/str(species_identifier),
-                            headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.delete(self.hds_url/str(species_identifier))
     def assign_species_to_record(self, species_identifier: UUID, record_hash: str):
         """Assign a species to a data record using the record hash. 
 
@@ -101,9 +99,9 @@ class harm_species:
         assign_url = self.hds_url / "assign"
         assign_url.args["species_id"] = str(species_identifier)
         assign_url.args["record_hash"] = record_hash
-        if health_check(self.base_url):
-            r = requests.post(assign_url,
-                            headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(assign_url)
     def remove_species_from_record(self, species_identifier: UUID, record_hash: str):
         """Remove a species assigned to a data record using the record hash. 
 
@@ -115,6 +113,6 @@ class harm_species:
         remove_url = self.hds_url / "remove"
         remove_url.args["species_id"] = str(species_identifier)
         remove_url.args["record_hash"] = record_hash
-        if health_check(self.base_url):
-            r = requests.post(remove_url,
-                            headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(remove_url)

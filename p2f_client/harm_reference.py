@@ -1,8 +1,6 @@
 # Local libraries
 from p2f_pydantic.harm_reference import HARM_Reference
-from .conn import health_check
 # Third Party Libraries
-import requests
 # Batteries included libraries
 from typing import Optional, List
 from uuid import UUID
@@ -25,11 +23,11 @@ class harm_reference:
         :return: The new reference as processed by the API
         :rtype: p2f_pydantic.harm_reference.HARM_Reference
         """
-        if health_check(self.base_url):
-            r = requests.post(self.hr_url, data=new_reference.model_dump_json(exclude_unset=True),
-                            headers=self.p2fclient.base_headers)
-            if r.ok:
-                return (HARM_Reference(**r.json()))
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(self.hr_url, data=new_reference.model_dump_json(exclude_unset=True))
+                if r.ok:
+                    return (HARM_Reference(**r.json()))
     def list_harm_references(self,
                              dataset_id: UUID | None = None, 
                              record_hash: str | None = None, 
@@ -55,14 +53,14 @@ class harm_reference:
             "record_hash": record_hash
         }
         params = {x: y for x,y in params.items() if y is not None}
-        if health_check(self.base_url):
-            r = requests.get(self.hr_url,
-                            headers=self.p2fclient.base_headers,
-                            params=params)
-            if r.ok:
-                return [HARM_Reference(**x) for x in r.json()]
-            else:
-                return []
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.get(self.hr_url,
+                                params=params)
+                if r.ok:
+                    return [HARM_Reference(**x) for x in r.json()]
+                else:
+                    return []
     def get_harm_reference(self, reference_id: UUID) -> HARM_Reference:
         """Get an individual harm reference from the API by reference ID
 
@@ -71,20 +69,20 @@ class harm_reference:
         :return: The reference from the API
         :rtype: p2f_pydantic.harm_reference.HARM_Reference
         """
-        if health_check(self.base_url):
-            r = requests.get(self.hr_url / str(reference_id),
-                            headers=self.p2fclient.base_headers)
-            if r.ok:
-                return HARM_Reference(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.get(self.hr_url / str(reference_id))
+                if r.ok:
+                    return HARM_Reference(**r.json())
     def delete_harm_reference(self, reference_id: UUID):
         """Not implemented
 
         :param reference_id: Delete a reference from the API based on the reference ID
         :type reference_id: UUID
         """
-        if health_check(self.base_url):
-            r = requests.delete(self.hr_url / str(reference_id),
-                            headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.delete(self.hr_url / str(reference_id))
     def assign_harm_reference(self, 
                               reference_id: UUID, 
                               record_hash: str):
@@ -98,9 +96,9 @@ class harm_reference:
         assign_url = self.hr_url / "assign"
         assign_url.args["reference_id"] = str(reference_id)
         assign_url.args["record_hash"] = record_hash
-        if health_check(self.base_url):
-            r = requests.post(assign_url,
-                            headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(assign_url)
     def remove_harm_reference(self, 
                               reference_id: UUID, 
                               record_hash: str):
@@ -114,6 +112,6 @@ class harm_reference:
         remove_url = self.hr_url / "remove"
         remove_url.args["reference_id"] = str(reference_id)
         remove_url.args["record_hash"] = record_hash
-        if health_check(self.base_url):
-            r = requests.delete(remove_url,
-                            headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.delete(remove_url)

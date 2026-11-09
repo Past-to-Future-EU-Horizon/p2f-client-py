@@ -1,9 +1,6 @@
 # Local libraries
 from p2f_pydantic.harm_location import HARM_Bounding_Box, HARM_Location
-from .conn import health_check
 # Third Party Libraries
-import requests
-from furl import furl
 # Batteries included libraries
 from uuid import UUID
 from typing import Optional, List, Union
@@ -26,11 +23,11 @@ class harm_location:
         :return: The new location as processed by the API 
         :rtype: p2f_pydantic.harm_data_metadata.HARM_Location
         """
-        if health_check(self.base_url):
-            r = requests.post(self.hdl_url, 
-                              data=new_location.model_dump_json(exclude_unset=True),
-                              headers=self.p2fclient.base_headers)
-            return HARM_Location(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(self.hdl_url, 
+                                data=new_location.model_dump_json(exclude_unset=True))
+                return HARM_Location(**r.json())
     def list_harm_locations(self,
                             bounding_box: Optional[HARM_Bounding_Box]=None,
                             location_name: Optional[str]=None, 
@@ -78,11 +75,11 @@ class harm_location:
             "active_locations": active_locations,
             }
         params = {x: y for x, y in params.items() if y != None}
-        if health_check(self.base_url):
-            r = requests.get(self.hdl_url,
-                            params=params,
-                            headers=self.p2fclient.base_headers)
-            return [HARM_Location(**x) for x in r.json()]
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.get(self.hdl_url,
+                                params=params)
+                return [HARM_Location(**x) for x in r.json()]
     def get_harm_location(self, location_id: UUID) -> HARM_Location:
         """Retrieve an individual HARM Location by its location identifier
 
@@ -91,19 +88,19 @@ class harm_location:
         :return: HARM Location from the API
         :rtype: p2f_pydantic.harm_data_metadata.HARM_Location
         """
-        if health_check(self.base_url):
-            r = requests.get(self.hdl_url/str(location_id),
-                            headers=self.p2fclient.base_headers)
-            return HARM_Location(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.get(self.hdl_url/str(location_id))
+                return HARM_Location(**r.json())
     def delete_harm_location(self, location_id: UUID):
         """Delete a location from the API
 
         :param location_id: location identifier from the API
         :type location_id: UUID
         """
-        if health_check(self.base_url):
-            r = requests.delete(self.hdl_url/str(location_id),
-                            headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.delete(self.hdl_url/str(location_id))
     def assign_location_to_record(self, location_id: UUID, record_hash: str):
         """Assign a location to a record hash
 
@@ -117,9 +114,9 @@ class harm_location:
         assign_url = self.hdl_url / "assign-record"
         assign_url.args["location_id"] = str(location_id)
         assign_url.args["record_hash"] = record_hash
-        if health_check(self.base_url):
-            r = requests.post(assign_url,
-                            headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(assign_url)
     def remove_location_from_record(self, location_id: UUID, record_hash: str):
         """Remove a location assigned to a record hash
 
@@ -133,9 +130,9 @@ class harm_location:
         remove_url = self.hdl_url / "remove-record"
         remove_url.args["location_id"] = str(location_id)
         remove_url.args["record_hash"] = record_hash
-        if health_check(self.base_url):
-            r = requests.post(remove_url,
-                            headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(remove_url)
     def assign_location_to_dataset(self, location_id: UUID, dataset_id: UUID):
         """Assign a location to a dataset
 
@@ -147,9 +144,9 @@ class harm_location:
         assign_url = self.hdl_url / "assign-dataset"
         assign_url.args["location_id"] = str(location_id)
         assign_url.args["record_hash"] = str(dataset_id)
-        if health_check(self.base_url):
-            r = requests.post(assign_url,
-                              headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(assign_url)
     def remove_location_from_dataset(self, location_id: UUID, dataset_id: UUID):
         """Remove a location assigned to a dataset
 
@@ -161,6 +158,6 @@ class harm_location:
         remove_url = self.hdl_url / "remove-dataset"
         remove_url.args["location_id"] = str(location_id)
         remove_url.args["record_hash"] = str(dataset_id)
-        if health_check(self.base_url):
-            r = requests.post(remove_url,
-                              headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(remove_url)

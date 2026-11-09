@@ -3,11 +3,8 @@ from p2f_pydantic.harm_data_numerical import HARM_Float, HARM_Float_Confidence
 from p2f_pydantic.harm_data_numerical import HARM_Int, HARM_Int_Confidence
 from p2f_pydantic.harm_data_numerical import Insert_HARM_Numerical, Return_HARM_Numerical
 from p2f_pydantic.harm_data_numerical import Numerical_Table_Statistics
-from .conn import health_check
 from .conn import ACCEPT_DICT, ACCEPT_LIST
 # Third Party Libraries
-import requests
-from furl import furl
 import pandas as pd
 # Batteries included libraries
 from uuid import UUID
@@ -33,10 +30,10 @@ class harm_numerical:
         :return: numerical object as processed by the API
         :rtype: object from p2f_pydantic.harm_data_numerical
         """
-        if health_check(self.base_url):
-            r = requests.post(self.hdn_url, data=new_record.model_dump_json(exclude_unset=True),
-                            headers=self.p2fclient.base_headers)
-            return self.identify_numeric_object(r.json(), new_record.model_dump(exclude_unset=True))
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(self.hdn_url, data=new_record.model_dump_json(exclude_unset=True))
+                return self.identify_numeric_object(r.json(), new_record.model_dump(exclude_unset=True))
     def list_harm_numericals(self, 
                              record_hash: Optional[str]=None,
                              numeric_type: Optional[Literal["float_confidence", 
@@ -78,14 +75,15 @@ class harm_numerical:
                 "core_segment_id": core_segment_id
             }
             params = {x:y for x, y in params.items() if y != None}
-            headers = self.p2fclient.base_headers
-            headers["Accept"] = ACCEPT_DICT[request_as] # This can be a line w/o if/else or match/case, we don't care if the json path is taken and gets set again to application/json
-            if health_check(self.base_url):
-                r = requests.get(self.hdn_url, 
-                                params=params,
-                                headers=headers)
-                if r.ok:
-                    collected_results[numtype] = r.content
+            # headers = self.p2fclient.base_headers
+            # headers["Accept"] = ACCEPT_DICT[request_as] # This can be a line w/o if/else or match/case, we don't care if the json path is taken and gets set again to application/json
+            with self.p2fclient.sessionmaker() as session:
+                if self.p2fclient.health_check(session=session):
+                    session.headers.update({"Accept": ACCEPT_DICT[request_as]})
+                    r = session.get(self.hdn_url, 
+                                    params=params)
+                    if r.ok:
+                        collected_results[numtype] = r.content
         match request_as:
             case "json":
                 dictionary_transform = {f"data_harmonized_{x}": y for x, y in collected_results}
@@ -149,11 +147,10 @@ class harm_numerical:
             "core_segment_id": core_segment_id
             }
         params = {x: y for x, y in params.items() if y is not None}
-        headers = self.p2fclient.base_headers
         statistics_url = self.hdn_url / "statistics"
-        if health_check(self.base_url):
-            r = requests.get(statistics_url,
-                             headers=headers,
-                             params=params)
-            if r.ok:
-                return Numerical_Table_Statistics(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.get(statistics_url,
+                                params=params)
+                if r.ok:
+                    return Numerical_Table_Statistics(**r.json())

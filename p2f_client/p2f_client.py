@@ -2,8 +2,10 @@
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 from typing import Optional
+from urllib3.util import Retry
 # Third Party Libraries
 import requests
+from requests.adapters import HTTPAdapter
 import furl
 # Local libraries
 from .datasets import datasets
@@ -21,7 +23,6 @@ from .link_git import git
 from .keywords import keywords
 from .season import season
 from .seasonality import seasonality
-from .conn import health_check
 from p2f_pydantic.temp_accounts import Temp_Account
 from p2f_pydantic.system import API_Metadata, Semantic_Version
 
@@ -45,7 +46,7 @@ class P2F_Client:
         :param email: email address of the client that will interact with the API, defaults to None
         :type email: Optional[str], optional
         """
-        self.version = Semantic_Version(major=0, minor=0, patch=49)
+        self.version = Semantic_Version(major=0, minor=0, patch=50)
         self.hostname = hostname
         self.port = port
         if https:
@@ -62,7 +63,26 @@ class P2F_Client:
                              "x-p2f-token": self.auth_token,
                              "x-p2f-email": self.auth_email}
         self.child_class_loading()
+        self.RETRY = Retry(total=3,
+                           backoff_factor=0.5,
+                           allowed_methods={"GET", "OPTIONS"})
+    def sessionmaker(self) -> requests.Session:
+        session = requests.Session()
+        retry_adapter = HTTPAdapter(max_retries=self.RETRY)
+        session.mount("http://", retry_adapter)
+        session.mount("https://", retry_adapter)
+        session.headers.update(self.base_headers)
+        return session
 
+    def health_check(self, session):
+        prefix = "health-check"
+        healthcheck_url = self.base_url / f"{prefix}/"
+        r = session.get(healthcheck_url)
+        if r.ok:
+            return True
+        else: 
+            return False
+    
     def probe_api_endpoint(self):
         """Function to get metadata about the configured API.
 
@@ -73,18 +93,19 @@ class P2F_Client:
         :raises RuntimeWarning: If the client library is a patch version behind the API's minimum 
             supported patch version. 
         """
-        if health_check(self.base_url):
-            r = requests.get(self.base_url / "version")
-            if r.ok:
-                api_meta = API_Metadata(**r.json())
-                if api_meta.pyclient_minimum_version.major > self.version.major:
-                    raise EnvironmentError("Current p2f-client-py version does not match API server's minimum supported version. Update your p2f-client-py library.")
-                else:
-                    if api_meta.pyclient_minimum_version.minor > self.version.minor:
-                        raise RuntimeWarning("The minor version of this library, p2f-client-py, is less than the minimum supported minor version of the API server. You may experience errors when interacting with the API through the client. Please update p2f-client-py")
+        with self.sessionmaker() as session:
+            if self.health_check(session=session):
+                r = session.get(self.base_url / "version")
+                if r.ok:
+                    api_meta = API_Metadata(**r.json())
+                    if api_meta.pyclient_minimum_version.major > self.version.major:
+                        raise EnvironmentError("Current p2f-client-py version does not match API server's minimum supported version. Update your p2f-client-py library.")
                     else:
-                        if api_meta.pyclient_minimum_version.patch > self.version.patch:
-                            raise RuntimeWarning("The patch version of this library, p2f-client-py, is less than the minimum supported patch version of the API server. You should not, but may experience errors when interacting with the API through the client. Please update p2f-client-py")
+                        if api_meta.pyclient_minimum_version.minor > self.version.minor:
+                            raise RuntimeWarning("The minor version of this library, p2f-client-py, is less than the minimum supported minor version of the API server. You may experience errors when interacting with the API through the client. Please update p2f-client-py")
+                        else:
+                            if api_meta.pyclient_minimum_version.patch > self.version.patch:
+                                raise RuntimeWarning("The patch version of this library, p2f-client-py, is less than the minimum supported patch version of the API server. You should not, but may experience errors when interacting with the API through the client. Please update p2f-client-py")
     def child_class_loading(self):
         """A function to reload the child data classes for interacting with specific API components."""
         # Separated this out so we can reload it later. 
@@ -118,11 +139,15 @@ class P2F_Client:
         # calculate the datetime of the token before making the request
         #    so that our expiration time is just before actual expiration. 
         self.auth_token_expiration = datetime.now(tz=ZoneInfo("UTC")) + timedelta(hours=24)
-        if health_check(self.base_url):
-            r = requests.post(self.token_request_url, 
-                              data=token_request_model.model_dump_json(exclude_unset=True),
-                              headers=self.base_headers)
-            return r.json()
+        with self.sessionmaker() as session:
+            if self.health_check(session=session):
+                r = session.post(self.token_request_url, 
+                                 data=token_request_model.model_dump_json(exclude_unset=True),
+                                 headers=self.base_headers)
+                if r.ok:
+                    return r.json()
+                else:
+                    return r.status_code
     def set_token(self, token):
         self.auth_token = token
         self.child_class_loading()

@@ -1,9 +1,6 @@
 # Local libraries
 from p2f_pydantic.harm_core import Core, CoreSegment
-from .conn import health_check
 # Third Party Libraries
-import requests
-from furl import furl
 # Batteries included libraries
 from uuid import UUID
 from typing import Optional, List, Literal
@@ -24,11 +21,11 @@ class harm_core:
         :return: Core object as processed by server
         :rtype: Core
         """
-        if health_check(self.base_url):
-            r = requests.post(self.core_url, 
-                              data=new_core.model_dump_json(exclude_unset=True),
-                              headers=self.p2fclient.base_headers)
-            return Core(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(self.core_url, 
+                                data=new_core.model_dump_json(exclude_unset=True))
+                return Core(**r.json())
     def upload_core_segment(self,
                             core_id: UUID, 
                             new_core_segment: CoreSegment) -> CoreSegment:
@@ -41,12 +38,12 @@ class harm_core:
         :return: Core segment as processed by the server
         :rtype: CoreSegment
         """
-        if health_check(self.base_url):
-            segment_url = self.core_url / str(core_id) / "segment"
-            r = requests.post(segment_url, 
-                              data=new_core_segment.model_dump_json(exclude_unset=True),
-                              headers=self.p2fclient.base_headers)
-            return CoreSegment(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                segment_url = self.core_url / str(core_id) / "segment"
+                r = session.post(segment_url, 
+                                data=new_core_segment.model_dump_json(exclude_unset=True))
+                return CoreSegment(**r.json())
     def list_cores(self,
                    dataset_id: UUID | None = None,
                    record_hash: str | None = None,
@@ -74,11 +71,11 @@ class harm_core:
             "core_type": core_type
         }
         params = {x:y for x, y in params.items() if y is not None}
-        if health_check(self.base_url):
-            r = requests.get(self.core_url, 
-                             headers=self.p2fclient.base_headers,
-                             params=params)
-            return [Core(**x) for x in r.json()]
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.get(self.core_url,
+                                params=params)
+                return [Core(**x) for x in r.json()]
     def list_core_segments(self, \
                            core_id: UUID | None = None,
                            dataset_id: UUID | None = None, 
@@ -109,11 +106,11 @@ class harm_core:
             "active_segments": active_segments
         }
         params = {x: y for x, y in params.items()}
-        if health_check(self.base_url):
-            segment_url = self.core_url / core_id / "segment"
-            r = requests.get(segment_url,
-                             headers=self.p2fclient.base_headers)
-            return [CoreSegment(**x) for x in r.json()]
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                segment_url = self.core_url / core_id / "segment"
+                r = session.get(segment_url)
+                return [CoreSegment(**x) for x in r.json()]
     def get_core(self, core_id: UUID) -> Core:
         """Get an individual HARM Core from the server
 
@@ -122,11 +119,11 @@ class harm_core:
         :return: HARM Core object
         :rtype: Core
         """
-        if health_check(self.base_url):
-            core_url = self.core_url / str(core_id)
-            r = requests.get(core_url, 
-                             headers=self.p2fclient.base_headers)
-            return Core(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                core_url = self.core_url / str(core_id)
+                r = session.get(core_url)
+                return Core(**r.json())
     def get_core_segment(self, core_id: UUID, core_segment_id: UUID) -> CoreSegment:
         """Get an individual HARM Core Segment from the API
 
@@ -137,21 +134,21 @@ class harm_core:
         :return: HARM Core Segment
         :rtype: CoreSegment
         """
-        if health_check(self.base_url):
-            segment_url = self.core_url / str(core_id) / "segment" / str(core_segment_id)
-            r = requests.get(segment_url, 
-                             headers=self.p2fclient.base_headers)
-            return CoreSegment(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                segment_url = self.core_url / str(core_id) / "segment" / str(core_segment_id)
+                r = session.get(segment_url)
+                return CoreSegment(**r.json())
     def delete_core(self, core_id: UUID) -> None:
         """Delete a HARM Core from the API
 
         :param core_id: core_id of the HARM Core to be deleted
         :type core_id: UUID
         """
-        if health_check(self.base_url):
-            core_url = self.core_url / str(core_id)
-            r = requests.delete(core_url, 
-                                headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                core_url = self.core_url / str(core_id)
+                r = session.delete(core_url)
     def delete_core_segment(self, core_id: UUID, core_segment_id: UUID) -> None:
         """Delete a HARM Core Segment from the API
 
@@ -160,10 +157,10 @@ class harm_core:
         :param core_segment_id: core_segment_id of the HARM Core Segment to be deleted
         :type core_segment_id: UUID
         """
-        if health_check(self.base_url):
-            segment_url = self.core_url / str(core_id) / "segment" / str(core_segment_id)
-            r = requests.delete(segment_url,
-                                headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                segment_url = self.core_url / str(core_id) / "segment" / str(core_segment_id)
+                r = session.delete(segment_url)
     def assign_core_segment_to_record_hash(self, core_segment_id: UUID, record_hash: str) -> None:
         """Assign a HARM Core Segment to a record hash
 
@@ -172,10 +169,10 @@ class harm_core:
         :param record_hash: Record hash the HARM Core Segment will be associated to
         :type record_hash: str
         """
-        if health_check(self.base_url):
-            segment_url = self.core_url / "segment" / str(core_segment_id) / "assign" / record_hash
-            r = requests.post(segment_url, 
-                              headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                segment_url = self.core_url / "segment" / str(core_segment_id) / "assign" / record_hash
+                r = session.post(segment_url)
     def remove_core_segment_from_record_hash(self, core_segment_id: UUID, record_hash: str) -> None:
         """Remove a HARM Core Segment from a record hash
 
@@ -184,7 +181,7 @@ class harm_core:
         :param record_hash: Record hash the HARM Core Segment will no longer be associated with
         :type record_hash: str
         """
-        if health_check(self.base_url):
-            segment_url = self.core_url / "segment" / str(core_segment_id) / "remove" / record_hash
-            r = requests.delete(segment_url,
-                                headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                segment_url = self.core_url / "segment" / str(core_segment_id) / "remove" / record_hash
+                r = session.delete(segment_url)

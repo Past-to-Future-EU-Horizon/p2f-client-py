@@ -1,8 +1,6 @@
 # Local libraries
 from p2f_pydantic.link_git import Git_Repository
-from .conn import health_check
 # Third Party Libraries
-import requests
 # Batteries included libraries
 from typing import List, Optional
 from uuid import UUID
@@ -24,25 +22,25 @@ class git:
         :return: New git repository as processed by API
         :rtype: p2f_pydantic.link_git.Git_Repository
         """
-        if health_check(self.base_url):
-            r = requests.post(self.git_url, 
-                              data=new_git_repo.model_dump_json(exclude_unset=True),
-                              headers=self.p2fclient.base_headers)
-            if r.ok:
-                return Git_Repository(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(self.git_url, 
+                                data=new_git_repo.model_dump_json(exclude_unset=True))
+                if r.ok:
+                    return Git_Repository(**r.json())
     def list_git_repositories(self) -> List[Git_Repository]:
         """List the git repositories on the P2F API
 
         :return: List of git repositories
         :rtype: List[p2f_pydantic.link_git.Git_Repository]
         """
-        if health_check(self.base_url):
-            r = requests.get(self.git_url,
-                             headers=self.p2fclient.base_headers)
-            if r.ok:
-                return [Git_Repository(**x) for x in r.json()]
-            else:
-                return []
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.get(self.git_url)
+                if r.ok:
+                    return [Git_Repository(**x) for x in r.json()]
+                else:
+                    return []
     def get_git_repository(self, git_repo_id: str) -> Git_Repository:
         """Get a specific git repository based on its API git_repo_id
 
@@ -51,22 +49,22 @@ class git:
         :return: Git_Repository from API
         :rtype: Git_Repository
         """
-        if health_check(self.base_url):
-            r = requests.get(self.git_url,
-                             params={"git_repo_id": git_repo_id}, 
-                             headers=self.p2fclient.base_headers)
-            if r.ok:
-                return Git_Repository(**r.json())
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.get(self.git_url,
+                                params={"git_repo_id": git_repo_id})
+                if r.ok:
+                    return Git_Repository(**r.json())
     def delete_git_repository(self, git_repo_id: str):
         """Delete a git repository from the API
 
         :param git_repo_id: git repository id from the API
         :type git_repo_id: str
         """ 
-        if health_check(self.base_url):
-            r = requests.delete(self.git_url,
-                                params={"git_repo_id": git_repo_id},
-                                headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.delete(self.git_url,
+                                    params={"git_repo_id": git_repo_id})
     def assign_git_repository(self, git_repo_id: str, dataset_id: UUID):
         """Assign a git repository to a dataset by git_repo_id and dataset_id
 
@@ -78,9 +76,9 @@ class git:
         assign_url = self.git_url / "assign"
         assign_url.args["git_repo_id"] = git_repo_id
         assign_url.args["dataset_id"] = str(dataset_id)
-        if health_check(self.base_url):
-            r = requests.post(assign_url, 
-                              headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(assign_url)
     def remove_git_repository(self, git_repo_id: str, dataset_id: UUID):
         """Remove a git repository assigned to a dataset by git_repo_id and dataset_id
 
@@ -92,6 +90,6 @@ class git:
         remove_url = self.git_url / "remove"
         remove_url.args["git_repo_id"] = git_repo_id
         remove_url.args["dataset_id"] = str(dataset_id)
-        if health_check(self.base_url):
-            r = requests.post(remove_url, 
-                              headers=self.p2fclient.base_headers)
+        with self.p2fclient.sessionmaker() as session:
+            if self.p2fclient.health_check(session=session):
+                r = session.post(remove_url)
