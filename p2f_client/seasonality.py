@@ -1,5 +1,6 @@
 # Local libraries
 from p2f_pydantic.seasonality import Seasonality_DS
+from .conn import eval_non_ok_return
 # Third Party Libraries
 # Batteries included libraries
 from uuid import UUID
@@ -21,13 +22,20 @@ class seasonality:
                 local_url = self.seasonality_url / dataset_id
                 r = session.post(local_url, 
                                 data=new_seasonality.model_dump_json(exclude_unset=True))
+                if r.ok:
+                    return Seasonality_DS(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def get_seasonality(self, 
                    dataset_id: UUID) -> Seasonality_DS:
         with self.p2fclient.sessionmaker() as session:
             if self.p2fclient.health_check(session=session):
                 local_url = self.seasonality_url / dataset_id
                 r = session.get(local_url)
-                return Seasonality_DS(**r.json())
+                if r.ok:
+                    return Seasonality_DS(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def delete_season(self, 
                       dataset_id: UUID):
         with self.p2fclient.sessionmaker() as session:

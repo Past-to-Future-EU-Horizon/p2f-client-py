@@ -1,5 +1,6 @@
 # Local libraries
 from p2f_pydantic.harm_reference import HARM_Reference
+from .conn import eval_non_ok_return
 # Third Party Libraries
 # Batteries included libraries
 from typing import Optional, List
@@ -28,6 +29,8 @@ class harm_reference:
                 r = session.post(self.hr_url, data=new_reference.model_dump_json(exclude_unset=True))
                 if r.ok:
                     return (HARM_Reference(**r.json()))
+                else: 
+                    eval_non_ok_return(r.status_code)
     def list_harm_references(self,
                              dataset_id: UUID | None = None, 
                              record_hash: str | None = None, 
@@ -59,8 +62,8 @@ class harm_reference:
                                 params=params)
                 if r.ok:
                     return [HARM_Reference(**x) for x in r.json()]
-                else:
-                    return []
+                else: 
+                    eval_non_ok_return(r.status_code)
     def get_harm_reference(self, reference_id: UUID) -> HARM_Reference:
         """Get an individual harm reference from the API by reference ID
 
@@ -74,6 +77,8 @@ class harm_reference:
                 r = session.get(self.hr_url / str(reference_id))
                 if r.ok:
                     return HARM_Reference(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def delete_harm_reference(self, reference_id: UUID):
         """Not implemented
 

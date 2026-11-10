@@ -1,5 +1,6 @@
 # Local libraries
 from p2f_pydantic.link_git import Git_Repository
+from .conn import eval_non_ok_return
 # Third Party Libraries
 # Batteries included libraries
 from typing import List, Optional
@@ -28,6 +29,8 @@ class git:
                                 data=new_git_repo.model_dump_json(exclude_unset=True))
                 if r.ok:
                     return Git_Repository(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def list_git_repositories(self) -> List[Git_Repository]:
         """List the git repositories on the P2F API
 
@@ -39,8 +42,8 @@ class git:
                 r = session.get(self.git_url)
                 if r.ok:
                     return [Git_Repository(**x) for x in r.json()]
-                else:
-                    return []
+                else: 
+                    eval_non_ok_return(r.status_code)
     def get_git_repository(self, git_repo_id: str) -> Git_Repository:
         """Get a specific git repository based on its API git_repo_id
 
@@ -55,6 +58,8 @@ class git:
                                 params={"git_repo_id": git_repo_id})
                 if r.ok:
                     return Git_Repository(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def delete_git_repository(self, git_repo_id: str):
         """Delete a git repository from the API
 

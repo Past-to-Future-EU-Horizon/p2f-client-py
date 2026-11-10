@@ -1,5 +1,6 @@
 # Local libraries
 from p2f_pydantic.harm_ds_time import HARM_DS_TimeCoverage
+from .conn import eval_non_ok_return
 # Third Party Libraries
 # Batteries included libraries
 from uuid import UUID
@@ -17,12 +18,18 @@ class harm_ds_timecoverage:
             if self.p2fclient.health_check(session=session):
                 r = session.post(self.hdt_url, 
                                 data=new_time_coverage.model_dump_json(exclude_unset=True))
-                return HARM_DS_TimeCoverage(**r.json())
+                if r.ok:
+                    return HARM_DS_TimeCoverage(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def get_dataset_timecoverage(self, dataset_id: UUID) -> HARM_DS_TimeCoverage:
         with self.p2fclient.sessionmaker() as session:
             if self.p2fclient.health_check(session=session):
                 r = session.get(self.hdt_url / str(dataset_id))
-                return HARM_DS_TimeCoverage(**r.json())
+                if r.ok:
+                    return HARM_DS_TimeCoverage(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def delete_dataset_timecoverage(self, dataset_id: UUID):
         with self.p2fclient.sessionmaker() as session:
             if self.p2fclient.health_check(session=session):

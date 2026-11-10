@@ -1,6 +1,7 @@
 # Local libraries
 from p2f_pydantic.harm_core import Core, CoreSegment
 # Third Party Libraries
+from .conn import eval_non_ok_return
 # Batteries included libraries
 from uuid import UUID
 from typing import Optional, List, Literal
@@ -25,7 +26,10 @@ class harm_core:
             if self.p2fclient.health_check(session=session):
                 r = session.post(self.core_url, 
                                 data=new_core.model_dump_json(exclude_unset=True))
-                return Core(**r.json())
+                if r.ok:
+                    return Core(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def upload_core_segment(self,
                             core_id: UUID, 
                             new_core_segment: CoreSegment) -> CoreSegment:
@@ -43,7 +47,10 @@ class harm_core:
                 segment_url = self.core_url / str(core_id) / "segment"
                 r = session.post(segment_url, 
                                 data=new_core_segment.model_dump_json(exclude_unset=True))
-                return CoreSegment(**r.json())
+                if r.ok:
+                    return CoreSegment(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def list_cores(self,
                    dataset_id: UUID | None = None,
                    record_hash: str | None = None,
@@ -75,7 +82,10 @@ class harm_core:
             if self.p2fclient.health_check(session=session):
                 r = session.get(self.core_url,
                                 params=params)
-                return [Core(**x) for x in r.json()]
+                if r.ok:
+                    return [Core(**x) for x in r.json()]
+                else: 
+                    eval_non_ok_return(r.status_code)
     def list_core_segments(self, \
                            core_id: UUID | None = None,
                            dataset_id: UUID | None = None, 
@@ -110,7 +120,10 @@ class harm_core:
             if self.p2fclient.health_check(session=session):
                 segment_url = self.core_url / core_id / "segment"
                 r = session.get(segment_url)
-                return [CoreSegment(**x) for x in r.json()]
+                if r.ok:
+                    return [CoreSegment(**x) for x in r.json()]
+                else: 
+                    eval_non_ok_return(r.status_code)
     def get_core(self, core_id: UUID) -> Core:
         """Get an individual HARM Core from the server
 
@@ -123,7 +136,10 @@ class harm_core:
             if self.p2fclient.health_check(session=session):
                 core_url = self.core_url / str(core_id)
                 r = session.get(core_url)
-                return Core(**r.json())
+                if r.ok:
+                    return Core(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def get_core_segment(self, core_id: UUID, core_segment_id: UUID) -> CoreSegment:
         """Get an individual HARM Core Segment from the API
 
@@ -138,7 +154,10 @@ class harm_core:
             if self.p2fclient.health_check(session=session):
                 segment_url = self.core_url / str(core_id) / "segment" / str(core_segment_id)
                 r = session.get(segment_url)
-                return CoreSegment(**r.json())
+                if r.ok:
+                    return CoreSegment(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def delete_core(self, core_id: UUID) -> None:
         """Delete a HARM Core from the API
 

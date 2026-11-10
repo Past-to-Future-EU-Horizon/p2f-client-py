@@ -1,5 +1,6 @@
 # Local libraries
 from p2f_pydantic.harm_timeslices import HARM_Timeslice
+from .conn import eval_non_ok_return
 # Third Party Libraries
 # Batteries included libraries
 from uuid import UUID
@@ -26,7 +27,10 @@ class harm_timeslice:
             if self.p2fclient.health_check(session=session):
                 r = session.post(self.ht_url, 
                                 data=new_timeslice.model_dump_json(exclude_unset=True))
-                return HARM_Timeslice(**r.json())
+                if r.ok:
+                    return HARM_Timeslice(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def list_timeslices(self,
                         named_time_period: Optional[str]=None, 
                         older_search_age: Optional[int]=None,
@@ -50,7 +54,10 @@ class harm_timeslice:
             if self.p2fclient.health_check(session=session):
                 r = session.get(self.ht_url, 
                                 params=params)
-                return [HARM_Timeslice(**x) for x in r.json()]
+                if r.ok:
+                    return [HARM_Timeslice(**x) for x in r.json()]
+                else: 
+                    eval_non_ok_return(r.status_code)
     def get_timeslice(self, 
                       timeslice_id: UUID) -> HARM_Timeslice:
         """Get an individual timeslice by its timeslice_id
@@ -63,7 +70,10 @@ class harm_timeslice:
         with self.p2fclient.sessionmaker() as session:
             if self.p2fclient.health_check(session=session):
                 r = session.get(self.ht_url / str(timeslice_id))
-                return HARM_Timeslice(**r.json())
+                if r.ok:
+                    return HARM_Timeslice(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def delete_timeslice(self, 
                          timeslice_id: UUID):
         """Delete a timeslice from the API

@@ -1,5 +1,6 @@
 # Local libraries
 from p2f_pydantic.harm_location import HARM_Bounding_Box, HARM_Location
+from .conn import eval_non_ok_return
 # Third Party Libraries
 # Batteries included libraries
 from uuid import UUID
@@ -27,7 +28,10 @@ class harm_location:
             if self.p2fclient.health_check(session=session):
                 r = session.post(self.hdl_url, 
                                 data=new_location.model_dump_json(exclude_unset=True))
-                return HARM_Location(**r.json())
+                if r.ok:
+                    return HARM_Location(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def list_harm_locations(self,
                             bounding_box: Optional[HARM_Bounding_Box]=None,
                             location_name: Optional[str]=None, 
@@ -91,7 +95,10 @@ class harm_location:
         with self.p2fclient.sessionmaker() as session:
             if self.p2fclient.health_check(session=session):
                 r = session.get(self.hdl_url/str(location_id))
-                return HARM_Location(**r.json())
+                if r.ok:
+                    return HARM_Location(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def delete_harm_location(self, location_id: UUID):
         """Delete a location from the API
 

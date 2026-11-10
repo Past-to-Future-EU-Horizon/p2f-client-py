@@ -23,6 +23,7 @@ from .link_git import git
 from .keywords import keywords
 from .season import season
 from .seasonality import seasonality
+from .conn import eval_non_ok_return
 from p2f_pydantic.temp_accounts import Temp_Account
 from p2f_pydantic.system import API_Metadata, Semantic_Version
 
@@ -146,8 +147,8 @@ class P2F_Client:
                                  headers=self.base_headers)
                 if r.ok:
                     return r.json()
-                else:
-                    return r.status_code
+                else: 
+                    eval_non_ok_return(r.status_code)
     def set_token(self, token):
         self.auth_token = token
         self.child_class_loading()

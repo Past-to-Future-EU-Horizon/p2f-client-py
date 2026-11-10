@@ -4,6 +4,7 @@ from p2f_pydantic.harm_data_numerical import HARM_Int, HARM_Int_Confidence
 from p2f_pydantic.harm_data_numerical import Insert_HARM_Numerical, Return_HARM_Numerical
 from p2f_pydantic.harm_data_numerical import Numerical_Table_Statistics
 from .conn import ACCEPT_DICT, ACCEPT_LIST
+from .conn import eval_non_ok_return
 # Third Party Libraries
 import pandas as pd
 # Batteries included libraries
@@ -33,7 +34,10 @@ class harm_numerical:
         with self.p2fclient.sessionmaker() as session:
             if self.p2fclient.health_check(session=session):
                 r = session.post(self.hdn_url, data=new_record.model_dump_json(exclude_unset=True))
-                return self.identify_numeric_object(r.json(), new_record.model_dump(exclude_unset=True))
+                if r.ok:
+                    return self.identify_numeric_object(r.json(), new_record.model_dump(exclude_unset=True))
+                else: 
+                    eval_non_ok_return(r.status_code)
     def list_harm_numericals(self, 
                              record_hash: Optional[str]=None,
                              numeric_type: Optional[Literal["float_confidence", 
@@ -84,6 +88,8 @@ class harm_numerical:
                                     params=params)
                     if r.ok:
                         collected_results[numtype] = r.content
+                    else: 
+                        eval_non_ok_return(r.status_code)
         match request_as:
             case "json":
                 dictionary_transform = {f"data_harmonized_{x}": y for x, y in collected_results}
@@ -154,3 +160,5 @@ class harm_numerical:
                                 params=params)
                 if r.ok:
                     return Numerical_Table_Statistics(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)

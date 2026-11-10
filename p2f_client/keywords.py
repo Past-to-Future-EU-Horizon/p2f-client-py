@@ -1,5 +1,6 @@
 # Local libraries
 from p2f_pydantic.keywords import Keywords, TaxonomicDict
+from .conn import eval_non_ok_return
 # Third Party Libraries
 # Batteries included libraries
 from uuid import UUID
@@ -36,7 +37,10 @@ class keywords:
                 local_params = {x:y for x, y in local_params.items() if y is not None}
                 r = session.get(self.key_url,
                                 params=local_params)
-                return [Keywords(**x) for x in r.json()]
+                if r.ok:
+                    return [Keywords(**x) for x in r.json()]
+                else: 
+                    eval_non_ok_return(r.status_code)
     def delete_keyword(self, 
                        dataset_id: UUID,
                        keyword: str):

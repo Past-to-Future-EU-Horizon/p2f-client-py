@@ -1,5 +1,6 @@
 # Local libraries
 from p2f_pydantic.harm_data_types import HARM_Data_Type
+from .conn import eval_non_ok_return
 # Third Party Libraries
 # Batteries included libraries
 from uuid import UUID
@@ -27,7 +28,10 @@ class harm_data_type:
             if self.p2fclient.health_check(session=session):
                 r = session.post(self.hdt_url, 
                                 data=new_data_type.model_dump_json(exclude_unset=True))
-                return HARM_Data_Type(**r.json())
+                if r.ok:
+                    return HARM_Data_Type(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def list_data_types(self, 
                         measure: Optional[str]=None,
                         unit_of_measure: Optional[str]=None,
@@ -65,7 +69,10 @@ class harm_data_type:
             if self.p2fclient.health_check(session=session):
                 r = session.get(self.hdt_url,
                                 params=params)
-                return [HARM_Data_Type(**x) for x in r.json()]
+                if r.ok:
+                    return [HARM_Data_Type(**x) for x in r.json()]
+                else: 
+                    eval_non_ok_return(r.status_code)
     def get_data_type(self, datatype_id: UUID) -> HARM_Data_Type:
         """Get an individual data type by the datatype_id
 
@@ -77,7 +84,10 @@ class harm_data_type:
         with self.p2fclient.sessionmaker() as session:
             if self.p2fclient.health_check(session=session):
                 r = session.get(self.hdt_url / str(datatype_id))
-                return HARM_Data_Type(**r.json())
+                if r.ok:
+                    return HARM_Data_Type(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def delete_data_type(self, datatype_id: UUID):
         """Delete a datatype from the API endpoint. 
 

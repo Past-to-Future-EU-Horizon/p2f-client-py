@@ -1,5 +1,6 @@
 # Local libraries
 from p2f_pydantic.harm_species import HARM_Species
+from .conn import eval_non_ok_return
 # Third Party Libraries
 # Batteries included libraries
 from typing import Optional, List
@@ -26,7 +27,10 @@ class harm_species:
             if self.p2fclient.health_check(session=session):
                 r = session.post(self.hds_url, 
                                 data=new_species.model_dump_json(exclude_unset=True))
-                return HARM_Species(**r.json())
+                if r.ok:
+                    return HARM_Species(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def list_harm_species(self, 
                           tax_domain: Optional[str]=None,
                           tax_kingdom: Optional[str]=None,
@@ -66,7 +70,10 @@ class harm_species:
             if self.p2fclient.health_check(session=session):
                 r = session.get(self.hds_url, 
                                 params=params)
-                return [HARM_Species(**x) for x in r.json()]
+                if r.ok:
+                    return [HARM_Species(**x) for x in r.json()]
+                else: 
+                    eval_non_ok_return(r.status_code)
     def get_harm_species(self, species_identifier: UUID) -> HARM_Species:
         """Get an individual harm species based on the API species id
 
@@ -78,7 +85,10 @@ class harm_species:
         with self.p2fclient.sessionmaker() as session:
             if self.p2fclient.health_check(session=session):
                 r = session.get(self.hds_url/str(species_identifier))
-                return HARM_Species(**r.json())
+                if r.ok:
+                    return HARM_Species(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def delete_harm_species(self, species_identifier: UUID):
         """Delete a species from the P2F API
 

@@ -7,6 +7,7 @@
 * Move base headers setting to parent client object. 
 * Add integration tests
 * Add docker dependency to dev pyproject.toml
+* Season and Seasonality creation now return the server created objects. 
 
 ### v0.0.48 - 2026-10-30
 

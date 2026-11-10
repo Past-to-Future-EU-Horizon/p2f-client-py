@@ -1,5 +1,6 @@
 # Local libraries
 from p2f_pydantic.harm_data_record import HARM_Data_Record
+from .conn import eval_non_ok_return
 # Third Party Libraries
 # Batteries included libraries
 from uuid import UUID
@@ -29,7 +30,10 @@ class harm_data_records:
             if self.p2fclient.health_check(session=session):
                 r = session.post(self.hdr_url,
                                 data=data_record.model_dump_json(exclude_unset=True))
-                return HARM_Data_Record(**r.json())
+                if r.ok:
+                    return HARM_Data_Record(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def list_remote_records(self, 
                             dataset_id: Optional[UUID]=None,
                             datatype_id: Optional[UUID]=None,
@@ -65,7 +69,10 @@ class harm_data_records:
             if self.p2fclient.health_check(session=session):
                 r = session.get(self.hdr_url,
                                 params=params)
-                return [HARM_Data_Record(**x) for x in r.json()]
+                if r.ok:
+                    return [HARM_Data_Record(**x) for x in r.json()]
+                else: 
+                    eval_non_ok_return(r.status_code)
     def get_remote_record(self, record_hash: str):
         """Get an individual HARM_Data_Record by record_hash
 
@@ -77,7 +84,10 @@ class harm_data_records:
         with self.p2fclient.sessionmaker() as session:
             if self.p2fclient.health_check(session=session):
                 r = session.get(self.hdr_url / record_hash)
-                return HARM_Data_Record(**r.json())
+                if r.ok:
+                    return HARM_Data_Record(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def delete_remote_dataset(self, record_hash: str):
         """Delete a HARM_Data_Record by the record hash from the API
 

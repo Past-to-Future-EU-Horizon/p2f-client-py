@@ -1,5 +1,6 @@
 # local libraries
 from p2f_pydantic.harm_age import HARM_Rec_Age
+from .conn import eval_non_ok_return
 # Third part libraries
 # Batteries included libraries
 from uuid import UUID
@@ -26,6 +27,8 @@ class harm_age:
                                  data=new_harm_age.model_dump_json(exclude_unset=True))
                 if r.ok:
                     return HARM_Rec_Age(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def list_harm_ages(self, 
                        older_year: Optional[int] = None, 
                        recent_year: Optional[int] = None,
@@ -44,6 +47,8 @@ class harm_age:
                                 params=params)
                 if r.ok:
                     return [HARM_Rec_Age(**x) for x in r.json()]
+                else: 
+                    eval_non_ok_return(r.status_code)
     def get_harm_age(self, record_hash: str) -> HARM_Rec_Age:
         with self.p2fclient.sessionmaker() as session:
             if self.p2fclient.health_check(session=session):

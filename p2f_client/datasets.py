@@ -1,5 +1,6 @@
 # Local libraries
 from p2f_pydantic.datasets import Datasets
+from .conn import eval_non_ok_return
 # Third Party Libraries
 # Batteries included libraries
 from uuid import UUID
@@ -27,7 +28,10 @@ class datasets:
             if self.p2fclient.health_check(session=session):
                 r = session.post(self.dataset_url,
                                  data=dataset.model_dump_json(exclude_unset=True))
-                return Datasets(**r.json())
+                if r.ok:
+                    return Datasets(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def list_remote_datasets(self, 
                              is_new_p2f: Optional[bool]=None,
                              is_sub_dataset: Optional[bool]=None,
@@ -70,8 +74,10 @@ class datasets:
             if self.p2fclient.health_check(session=session):
                 r = session.get(self.dataset_url,
                                 params=params)
-                # self.datasets = [Datasets(**x) for x in r.json()]
-                return [Datasets(**x) for x in r.json()]
+                if r.ok:
+                    return [Datasets(**x) for x in r.json()]
+                else: 
+                    eval_non_ok_return(r.status_code)
     def get_remote_dataset(self, dataset_id: UUID | str):
         """Get a single dataset record by the dataset ID
         
@@ -84,7 +90,10 @@ class datasets:
         with self.p2fclient.sessionmaker() as session:
             if self.p2fclient.health_check(session=session):
                 r = session.get(get_url)
-                return Datasets(**r.json())
+                if r.ok:
+                    return Datasets(**r.json())
+                else: 
+                    eval_non_ok_return(r.status_code)
     def delete_remote_dataset(self, dataset_id: UUID | str):
         """Delete a single dataset record by the dataset ID
         
@@ -97,3 +106,7 @@ class datasets:
         with self.p2fclient.sessionmaker() as session:
             if self.p2fclient.health_check(session=session):
                 r = session.delete(delete_url)
+                if r.ok:
+                    print(f"Deleted {dataset_id}")
+                else: 
+                    eval_non_ok_return(r.status_code)
