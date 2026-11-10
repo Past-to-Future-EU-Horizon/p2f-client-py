@@ -1,5 +1,6 @@
 from uuid import uuid4
 from pprint import pprint
+from copy import deepcopy
 from typing import List, Dict
 from random import randint, choice
 from os import mkdir, getcwd
@@ -9,6 +10,9 @@ from time import sleep
 import docker
 
 test_run_id = uuid4()
+shtrid = f"{str(hex(test_run_id.fields[-1]))[2:]}"
+
+print(shtrid)
 
 client = docker.from_env()
 
@@ -53,48 +57,48 @@ def extract_token(logs, email):
             # print(current_email == email)
     return password
 
-# Set the PORTAL environment
-as_portal_environment = {
-    "P2F_TEST_EMAIL": api_config["P2F_PORTAL_EMAIL_ADDRESS"],
-    "P2F_TEST_TOKEN": api_config["P2F_PORTAL_TOKEN"],
+base_environment = {
     "P2F_API_HOSTNAME": api_dns_name,
     "P2F_API_PORT": 8084,
     "P2F_API_HTTPS": False,
+    "PG_USER": api_config["PG_USER"],
+    "PG_PASS": api_config["PG_PASS"],
+    "PG_HOST": api_config["PG_HOST"],
+    "PG_PORT": api_config["PG_PORT"],
+    "PG_DB": api_config["PG_DB"],
 }
+
+# Set the PORTAL environment
+as_portal_environment = deepcopy(base_environment)
+as_portal_environment["P2F_TEST_EMAIL"] = api_config["P2F_PORTAL_EMAIL_ADDRESS"]
+as_portal_environment["P2F_TEST_TOKEN"] = api_config["P2F_PORTAL_TOKEN"]
 
 # Set the ADMIN environment
 api_container_logs = get_logs_docker(container=api_container)
 admin_token = extract_token(logs=api_container_logs, email=api_config["P2F_ADMIN_EMAIL_ADDRESS"])
 
-as_admin_environment = {
-    "P2F_TEST_EMAIL": api_config["P2F_ADMIN_EMAIL_ADDRESS"],
-    "P2F_TEST_TOKEN": admin_token,
-    "P2F_API_HOSTNAME": api_dns_name,
-    "P2F_API_PORT": 8084,
-    "P2F_API_HTTPS": False,
-}
+as_admin_environment = deepcopy(base_environment)
+as_admin_environment["P2F_TEST_EMAIL"] = api_config["P2F_ADMIN_EMAIL_ADDRESS"]
+as_admin_environment["P2F_TEST_TOKEN"] = admin_token
 
 # Set the CONSORTIUM USER environment
 consortium_user_email = "user@example.com"
 consortium_user_token = extract_token(logs=api_container_logs, email=consortium_user_email)
-as_consortium_environment = {
-    "P2F_TEST_EMAIL": consortium_user_email,
-    "P2F_TEST_TOKEN": consortium_user_token,
-    "P2F_API_HOSTNAME": api_dns_name,
-    "P2F_API_PORT": 8084,
-    "P2F_API_HTTPS": False,
-}
+
+as_consortium_environment = deepcopy(base_environment)
+as_consortium_environment["P2F_TEST_EMAIL"] = consortium_user_email
+as_consortium_environment["P2F_TEST_TOKEN"] = consortium_user_token
+
 
 # Set the UNAUTHORIZED USER environment
 unauthorized_user_email = "unauthorized@example.com"
 unauthorized_user_token = ""
-as_unauthorized_environment = {
-    "P2F_TEST_EMAIL": unauthorized_user_email,
-    "P2F_TEST_TOKEN": unauthorized_user_token,
-    "P2F_API_HOSTNAME": api_dns_name,
-    "P2F_API_PORT": 8084,
-    "P2F_API_HTTPS": False,
-}
+
+as_unauthorized_environment = deepcopy(base_environment)
+as_unauthorized_environment["P2F_TEST_EMAIL"] = unauthorized_user_email
+as_unauthorized_environment["P2F_TEST_TOKEN"] = unauthorized_user_token
+
+
 
 # Get the most recent client container image
 def highest_epoch_seconds(history: List[Dict]) -> int:
@@ -108,7 +112,6 @@ p2f_client_images = client.images.list("p2f-client*")
 p2f_client_image_ages = {highest_epoch_seconds(x.history()): x.id.split(":")[-1] for x in p2f_client_images}
 p2f_client_image = p2f_client_image_ages[max(p2f_client_image_ages.keys())]
 
-shtrid = f"{str(hex(test_run_id.fields[-1]))[2:]}"
 mkdir(f"{getcwd()}/tests/{shtrid}")
 # Create the containers
 client_portal_container = client.containers.run(image=p2f_client_image,
@@ -142,7 +145,7 @@ while len([x for x in client.containers.list() if x.name.startswith("p2f_client"
     for cont in [x for x in client.containers.list() if x.name.startswith("p2f_")]:
         try:
             logs_to_write = get_logs_docker(container=cont)
-            with open(f"{getcwd()}/tests/{shtrid}/{cont.name}", "w") as f:
+            with open(f"{getcwd()}/tests/{shtrid}/{cont.name}.txt", "w") as f:
                 f.write(logs_to_write)
         except docker.errors.NotFound:
             print("container lost")

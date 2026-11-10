@@ -58,18 +58,18 @@ class P2F_Client:
         self.base_url = furl.furl(self.host_url)
         self.auth_email = email
         self.auth_token = token
-        self.probe_api_endpoint()
         self.base_headers = {"Accept": "application/json", 
                              "Content-Type": "application/json", 
                              "x-p2f-token": self.auth_token,
                              "x-p2f-email": self.auth_email}
+        self.probe_api_endpoint()
         self.child_class_loading()
-        self.RETRY = Retry(total=3,
-                           backoff_factor=0.5,
-                           allowed_methods={"GET", "OPTIONS"})
     def sessionmaker(self) -> requests.Session:
         session = requests.Session()
-        retry_adapter = HTTPAdapter(max_retries=self.RETRY)
+        retry_obj = Retry(total=3,
+                          backoff_factor=0.5,
+                          allowed_methods={"GET", "OPTIONS"})
+        retry_adapter = HTTPAdapter(max_retries=retry_obj)
         session.mount("http://", retry_adapter)
         session.mount("https://", retry_adapter)
         session.headers.update(self.base_headers)

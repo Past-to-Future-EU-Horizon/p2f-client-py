@@ -10,7 +10,7 @@ ADD . .
 
 ENV UV_LINK_MODE=copy
 
-RUN --mount=type=cache,target=/root/.cache/ uv sync --upgrade && uv build
+RUN --mount=type=cache,target=/root/.cache/ uv sync --all-extras && uv build
 
 RUN uv pip install .
 
