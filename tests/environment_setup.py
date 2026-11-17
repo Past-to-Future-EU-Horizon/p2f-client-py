@@ -57,6 +57,10 @@ def extract_token(logs, email):
             # print(current_email == email)
     return password
 
+api_container_logs = get_logs_docker(container=api_container)
+admin_token = extract_token(logs=api_container_logs, email=api_config["P2F_ADMIN_EMAIL_ADDRESS"])
+
+
 base_environment = {
     "P2F_API_HOSTNAME": api_dns_name,
     "P2F_API_PORT": 8084,
@@ -66,6 +70,8 @@ base_environment = {
     "PG_HOST": api_config["PG_HOST"],
     "PG_PORT": api_config["PG_PORT"],
     "PG_DB": api_config["PG_DB"],
+    "P2F_TEST_ADMIN_EMAIL": api_config["P2F_ADMIN_EMAIL_ADDRESS"],
+    "P2F_TEST_ADMIN_TOKEN": admin_token
 }
 
 # Set the PORTAL environment
@@ -74,9 +80,6 @@ as_portal_environment["P2F_TEST_EMAIL"] = api_config["P2F_PORTAL_EMAIL_ADDRESS"]
 as_portal_environment["P2F_TEST_TOKEN"] = api_config["P2F_PORTAL_TOKEN"]
 
 # Set the ADMIN environment
-api_container_logs = get_logs_docker(container=api_container)
-admin_token = extract_token(logs=api_container_logs, email=api_config["P2F_ADMIN_EMAIL_ADDRESS"])
-
 as_admin_environment = deepcopy(base_environment)
 as_admin_environment["P2F_TEST_EMAIL"] = api_config["P2F_ADMIN_EMAIL_ADDRESS"]
 as_admin_environment["P2F_TEST_TOKEN"] = admin_token
@@ -141,13 +144,18 @@ client_unauthorized_container = client.containers.run(image=p2f_client_image,
 
 shtrid = f"{str(hex(test_run_id.fields[-1]))[2:]}"
 print([x for x in client.containers.list() if x.name.startswith("p2f_client")])
-while len([x for x in client.containers.list() if x.name.startswith("p2f_client")]) > 0:
-    for cont in [x for x in client.containers.list() if x.name.startswith("p2f_")]:
+finished = False
+while finished == False:
+    client_container_list = [x for x in client.containers.list() if x.name.startswith("p2f_client")]
+    for cont in client_container_list:
         try:
             logs_to_write = get_logs_docker(container=cont)
             with open(f"{getcwd()}/tests/{shtrid}/{cont.name}.txt", "w") as f:
                 f.write(logs_to_write)
         except docker.errors.NotFound:
             print("container lost")
-
-    sleep(2.5)
+        except docker.errors.APIError:
+            print("API Error")
+    sleep(1)
+    if len(client_container_list) < 1: 
+        finished = True 

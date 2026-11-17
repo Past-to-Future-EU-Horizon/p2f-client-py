@@ -4,6 +4,7 @@ from datetime import date
 from p2f_client.p2f_client import P2F_Client
 from logger_tests import logger
 from report_result import add_report
+from test_admincheat import get_random_existing_uuid
 
 def insert_datasets(client: P2F_Client):
     logger.debug("Running Insert Dataset")
@@ -39,9 +40,22 @@ def insert_datasets(client: P2F_Client):
         logger.debug(f"Subdataset {subdataset} uploaded")
 
 def list_datasets(client: P2F_Client):
+    logger.debug(f"Trying to list datasets on the API")
     try:
         dataset_list = client.datasets.list_remote_datasets()
         logger.debug(dataset_list)
         add_report(test_name="LIST DATASETS", output_text=f"Total datasets = {len(dataset_list)}", status_code=100)
     except Exception as e:
+        logger.debug(f"Dataset listing failed with error {e}")
         add_report(test_name="LIST DATASETS", output_text=e, status_code=999)
+
+def delete_dataset(client: P2F_Client):
+    dataset_to_delete = get_random_existing_uuid("dataset")
+    logger.debug(f"Trying to delete dataset {dataset_to_delete}")
+    try:
+        client.datasets.delete_remote_dataset(dataset_id=dataset_to_delete)
+        logger.debug(f"Dataset successfully deleted")
+        add_report(test_name="DELETE DATASET", output_text="deleted", status_code=100)
+    except Exception as e:
+        logger.debug(f"Dataset delete failed with error {e}")
+        add_report(test_name="DELETE DATASET", output_text=e, status_code=999)
