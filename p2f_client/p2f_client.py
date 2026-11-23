@@ -47,7 +47,7 @@ class P2F_Client:
         :param email: email address of the client that will interact with the API, defaults to None
         :type email: Optional[str], optional
         """
-        self.version = Semantic_Version(major=0, minor=0, patch=50)
+        self.version = Semantic_Version(major=0, minor=0, patch=51)
         self.hostname = hostname
         self.port = port
         if https:
@@ -68,7 +68,8 @@ class P2F_Client:
         session = requests.Session()
         retry_obj = Retry(total=3,
                           backoff_factor=0.5,
-                          allowed_methods={"GET", "OPTIONS"})
+                          allowed_methods={"GET", "OPTIONS"},
+                          status_forcelist=[500, 502, 503, 504])
         retry_adapter = HTTPAdapter(max_retries=retry_obj)
         session.mount("http://", retry_adapter)
         session.mount("https://", retry_adapter)

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v0.0.51 - 2026-11-23
+
+* Automatic retry on certain 5** API server errors
+
 ### v0.0.50 - 2026-11-09
 
 * Update the way requests are made to use a session with automatic retries. 
